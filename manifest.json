@@ -1,6 +1,6 @@
 {
-  "name": "Quiz App",
-  "short_name": "Quiz",
+  "name": "Kavindu learners",
+  "short_name": "KN learners",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
