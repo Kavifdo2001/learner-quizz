@@ -1,6 +1,7 @@
 {
   "name": "Kavindu learners",
   "short_name": "KN learners",
+  "scope": "./",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
