@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>රියදුරු බලපත්‍ර විභාග පුහුණුව - ශ්‍රී ලංකා</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --bg-primary: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #4b5563;
+            --accent: #2563eb;
+        }
+        .dark {
+            --bg-primary: #111827;
+            --bg-card: #1f2937;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --accent: #3b82f6;
+        }
+        body {
+            font-family: 'Noto Sans Sinhala', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .card-bg { background-color: var(--bg-card); }
+        .text-custom { color: var(--text-main); }
+        .text-muted-custom { color: var(--text-muted); }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        /* Animations */
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <nav class="card-bg shadow-md sticky top-0 z-50 transition-colors duration-300 border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="showView('dashboard')">
+                    <div class="bg-blue-600 text-white p-2 rounded-lg shadow-md animate-bounce">
+                        <i class="fa-solid fa-car-side text-xl"></i>
+                    </div>
+                    <span class="font-bold text-lg sm:text-xl tracking-tight text-blue-600 dark:text-blue-400">රියදුරු සිහිනය</span>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="රාත්‍රී මාදිලිය">
+                        <i id="theme-icon" class="fa-solid fa-moon text-lg text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                    <button onclick="toggleSound()" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="ශබ්ද පාලනය">
+                        <i id="sound-icon" class="fa-solid fa-volume-high text-lg text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <div id="dashboard-view" class="fade-in space-y-8">
+            <div class="text-center md:text-left py-4">
+                <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">ආයුබෝවන්! 🚗</h1>
+                <p class="mt-2 text-lg text-muted-custom">ශ්‍රී ලංකා සැහැල්ලු වාහන රියදුරු බලපත්‍ර ලිඛිත විභාගය ජය ගැනීමට අදම පුහුණුව අරඹන්න.</p>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="card-bg p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex items-center space-x-4">
+                    <div class="p-3 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-xl"><i class="fa-solid fa-file-signature text-2xl"></i></div>
+                    <div><p class="text-xs text-muted-custom font-semibold uppercase">මුළු විභාග</p><h3 id="stat-exams" class="text-xl font-bold mt-1">0</h3></div>
+                </div>
+                <div class="card-bg p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex items-center space-x-4">
+                    <div class="p-3 bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 rounded-xl"><i class="fa-solid fa-trophy text-2xl"></i></div>
+                    <div><p class="text-xs text-muted-custom font-semibold uppercase">හොඳම ලකුණ</p><h3 id="stat-best" class="text-xl font-bold mt-1">0%</h3></div>
+                </div>
+                <div class="card-bg p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex items-center space-x-4">
+                    <div class="p-3 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-xl"><i class="fa-solid fa-chart-simple text-2xl"></i></div>
+                    <div><p class="text-xs text-muted-custom font-semibold uppercase">සාමාන්‍යය</p><h3 id="stat-avg" class="text-xl font-bold mt-1">0%</h3></div>
+                </div>
+                <div class="card-bg p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex items-center space-x-4">
+                    <div class="p-3 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-2xl"></i></div>
+                    <div><p class="text-xs text-muted-custom font-semibold uppercase">දුර්වල අංශ</p><h3 id="stat-weak" class="text-sm font-bold mt-1 truncate max-w-[120px]">-</h3></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card-bg p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300">
+                    <div>
+                        <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center mb-4"><i class="fa-solid fa-stopwatch text-xl"></i></div>
+                        <h2 class="text-xl font-bold mb-2">නියමිත විභාග මාදිලිය (Exam Mode)</h2>
+                        <p class="text-muted-custom text-sm leading-relaxed">නියම විභාගය මෙන්ම විනාඩි 45 ක කාලයක් තුළ ප්‍රශ්න 40 කට පිළිතුරු සපයා ඔබේ දක්ෂතාව උරගා බලන්න.</p>
+                    </div>
+                    <button onclick="startExam(false)" class="mt-6 w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-4 rounded-xl transition shadow-sm">විභාගය අරඹන්න</button>
+                </div>
+
+                <div class="card-bg p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300">
+                    <div>
+                        <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center mb-4"><i class="fa-solid fa-book-open text-xl"></i></div>
+                        <h2 class="text-xl font-bold mb-2">නිදහස් පුහුණු මාදිලිය (Practice Mode)</h2>
+                        <p class="text-muted-custom text-sm leading-relaxed">කාල සීමාවන් නොමැතිව, පිළිතුර සැණෙකින් දැනගනිමින් සහ විග්‍රහයන් කියවමින් දැනුම වර්ධනය කරගන්න.</p>
+                    </div>
+                    <button onclick="startPractice()" class="mt-6 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-sm">පුහුණුව අරඹන්න</button>
+                </div>
+
+                <div class="card-bg p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300">
+                    <div>
+                        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center mb-4"><i class="fa-solid fa-traffic-light text-xl"></i></div>
+                        <h2 class="text-xl font-bold mb-2">මාර්ග සංඥා හඳුනාගැනීම</h2>
+                        <p class="text-muted-custom text-sm leading-relaxed">ශ්‍රී ලංකාවේ සියලුම මාර්ග සංඥා, පුවරු සහ මාර්ග සලකුණු පැහැදිලි විස්තර සහිතව මෙතැනින් ඉගෙන ගන්න.</p>
+                    </div>
+                    <button onclick="showView('signs')" class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-sm">සංඥා පුවරු බලන්න</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card-bg p-6 rounded-2xl shadow-md border border-gray-200 dark:border-gray-800 flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="p-4 bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-2xl"><i class="fa-solid fa-calendar-star text-2xl"></i></div>
+                        <div>
+                            <h3 class="font-bold text-lg">දෛනික අභියෝගය (Daily Challenge)</h3>
+                            <p class="text-sm text-muted-custom">දිනපතා අලුත් වන ප්‍රශ්න මාලාවකට මුහුණ දෙන්න.</p>
+                        </div>
+                    </div>
+                    <button onclick="startExam(true)" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-xl transition text-sm">ඇතුළු වන්න</button>
+                </div>
+
+                <div class="card-bg p-6 rounded-2xl shadow-md border border-gray-200 dark:border-gray-800">
+                    <h3 class="font-bold text-lg mb-4 flex items-center"><i class="fa-solid fa-ranking-star text-amber-500 mr-2"></i> ප්‍රමුඛ පුවරුව (Leaderboard)</h3>
+                    <div id="leaderboard-list" class="space-y-2 text-sm max-h-[120px] overflow-y-auto">
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz-view" class="fade-in hidden max-w-3xl mx-auto">
+            <div class="flex justify-between items-center mb-4 card-bg p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
+                <span id="quiz-mode-title" class="font-bold text-sm bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-3 py-1 rounded-full">විභාග මාදිලිය</span>
+                <div id="exam-timer-container" class="flex items-center space-x-2 text-red-600 dark:text-red-400 font-mono font-bold text-lg">
+                    <i class="fa-solid fa-clock animate-pulse"></i>
+                    <span id="exam-timer">45:00</span>
+                </div>
+            </div>
+
+            <div class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full mb-6 overflow-hidden">
+                <div id="quiz-progress" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <div class="card-bg p-6 sm:p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 space-y-6">
+                <div class="flex justify-between items-start">
+                    <span id="question-category" class="text-xs font-semibold uppercase tracking-wider bg-gray-100 dark:bg-gray-800 px-2.5 py-1 rounded text-muted-custom">ප්‍රවර්ගය</span>
+                    <button id="btn-review" onclick="toggleReviewMark()" class="text-sm text-gray-500 hover:text-amber-500 flex items-center space-x-1 transition">
+                        <i id="review-icon" class="fa-regular fa-bookmark"></i> <span id="review-text">පසුවට සලකුණු කරන්න</span>
+                    </button>
+                </div>
+
+                <h2 id="question-text" class="text-xl font-bold leading-snug">ප්‍රශ්නය මෙතැනට...</h2>
+
+                <div id="options-container" class="grid grid-cols-1 gap-3.5 pt-2">
+                    </div>
+
+                <div id="explanation-container" class="hidden bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/60 fade-in">
+                    <h4 class="font-bold text-emerald-800 dark:text-emerald-400 text-sm flex items-center"><i class="fa-solid fa-circle-info mr-2"></i> නිවැරදි පැහැදිලි කිරීම:</h4>
+                    <p id="explanation-text" class="text-sm mt-1 text-gray-700 dark:text-gray-300"></p>
+                </div>
+
+                <div class="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <button id="btn-prev" onclick="prevQuestion()" class="px-5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 font-semibold text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-40"><i class="fa-solid fa-arrow-left mr-1"></i> පෙර</button>
+                    <span id="question-number" class="text-sm font-bold text-muted-custom">1 / 40</span>
+                    <button id="btn-next" onclick="nextQuestion()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition">මීළඟ <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="results-view" class="fade-in hidden max-w-3xl mx-auto space-y-8">
+            <div class="card-bg p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 text-center space-y-6">
+                <div id="result-status-icon" class="w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div>
+                    <h1 id="result-status-title" class="text-3xl font-extrabold">සමත් / අසමත්</h1>
+                    <p id="result-motivation" class="text-muted-custom mt-2 px-4"></p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 py-4 max-w-md mx-auto">
+                    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl"><p class="text-xs text-muted-custom uppercase font-semibold">ලකුණු</p><h3 id="res-score" class="text-2xl font-black mt-1">0%</h3></div>
+                    <div class="bg-emerald-50 dark:bg-emerald-950/40 p-4 rounded-xl text-emerald-600"><p class="text-xs text-muted-custom uppercase font-semibold">නිවැරදි</p><h3 id="res-correct" class="text-2xl font-black mt-1">0</h3></div>
+                    <div class="bg-red-50 dark:bg-red-950/40 p-4 rounded-xl text-red-500"><p class="text-xs text-muted-custom uppercase font-semibold">වැරදි</p><h3 id="res-wrong" class="text-2xl font-black mt-1">0</h3></div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-center gap-4 pt-2">
+                    <button onclick="showView('dashboard')" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-xl transition"><i class="fa-solid fa-house mr-1"></i> ප්‍රධාන පුවරුවට</button>
+                    <button id="btn-show-review-section" onclick="scrollToReview()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition"><i class="fa-solid fa-magnifying-glass mr-1"></i> පිළිතුරු සමාලෝචනය</button>
+                </div>
+            </div>
+
+            <div id="detailed-review-section" class="space-y-4">
+                <h3 class="text-xl font-bold flex items-center text-custom"><i class="fa-solid fa-list-check mr-2 text-blue-600"></i> ඔබ මුහුණ දුන් ප්‍රශ්න පත්‍රයේ සමාලෝචනය</h3>
+                <div id="review-list" class="space-y-4">
+                    </div>
+            </div>
+        </div>
+
+        <div id="signs-view" class="fade-in hidden space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold">ශ්‍රී ලංකා මාර්ග සංඥා පුවරු</h2>
+                    <p class="text-muted-custom text-sm">සියලුම වැදගත් මාර්ග සංඥා සහ ඒවායේ අර්ථ දැක්වීම් මෙතැනින් ඉගෙන ගන්න.</p>
+                </div>
+                <div class="relative w-full md:w-72">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-gray-400"></i>
+                    <input type="text" id="sign-search" oninput="filterSigns()" placeholder="සංඥා පුවරු සොයන්න..." class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 card-bg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <div id="signs-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                </div>
+        </div>
+
+    </main>
+
+    <footer class="card-bg border-t border-gray-200 dark:border-gray-800 py-4 mt-8 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-muted-custom">
+            © 2026 රියදුරු සිහිනය - ශ්‍රී ලංකා මෝටර් රථ ප්‍රවාහන දෙපාර්තමේන්තු විෂය නිර්දේශයට අනුකූලයි.
+        </div>
+    </footer>
+
+    <audio id="snd-correct" src="https://assets.mixkit.co/active_storage/sfx/2185/2185-100.wav" preload="auto"></audio>
+    <audio id="snd-wrong" src="https://assets.mixkit.co/active_storage/sfx/2955/2955-100.wav" preload="auto"></audio>
+
+    <script>
+        // -------------------------------------------------------------------------
+        // 1. JSON DATA (ප්‍රශ්න 200 කට අධික ආදර්ශ දත්ත පද්ධතිය සහ මාර්ග සංඥා)
+        // -------------------------------------------------------------------------
+        const questionsData = [
+    {
+        "id": 1,
+        "question": "රතු ආලෝකයේදී රියදුරු කළ යුත්තේ කුමක්ද?",
+        "options": ["ගමන් කරන්න", "නවතින්න", "වේගය වැඩි කරන්න", "හැරෙන්න"],
+        "answer": 1,
+        "category": "මාර්ග සංඥා",
+        "explanation": "රතු ආලෝකය නැවතීමේ සංඥාවකි. නැවැත්වීමේ ඉරට පිටුපසින් වාහනය සම්පූර්ණයෙන්ම නැවැත්විය යුතුය."
+    },
+    {
+        "id": 2,
+        "question": "නාගරික හෝ බිල්ඩින් සහිත ප්‍රදේශ (Built-up areas) තුළ සැහැල්ලු මෝටර් රථ සඳහා පොදු උපරිම වේග සීමාව කොපමණද?",
+        "options": ["30 km/h", "50 km/h", "70 km/h", "105 km/h"],
+        "answer": 1,
+        "category": "වේග සීමා",
+        "explanation": "ශ්‍රී ලංකාවේ නාගරික සහ ජනාකීර්ණ ප්‍රදේශ තුළ සැහැල්ලු වාහන සඳහා උපරිම වේග සීමාව පැයට කිලෝමීටර් 50 කි."
+    },
+    {
+        "id": 3,
+        "question": "ශ්‍රී ලංකාවේ සාමාන්‍ය අනතුරු ඇඟවීමේ සංඥා පුවරුවක පසුබිම් වර්ණය කුමක්ද?",
+        "options": ["කොළ පැහැය", "නිල් පැහැය", "කහ පැහැය", "සුදු පැහැය"],
+        "answer": 2,
+        "category": "මාර්ග සංඥා",
+        "explanation": "අනතුරු ඇඟවීමේ සංඥා පුවරු ත්‍රිකෝණාකාර හැඩයෙන් යුක්ත වන අතර එහි පසුබිම කහ වර්ණයෙන් යුක්ත වේ."
+    },
+    {
+        "id": 4,
+        "question": "මහා මාර්ගයක මැද ඇඳ ඇති තනි නොකැඩුණු සුදු ඉරෙන් (Continuous White Line) අදහස් කරන්නේ කුමක්ද?",
+        "options": ["ඉස්සර කිරීම සහ ඉර කැපීම සපුරා තහනම් බව", "එම ඉර මත වාහනය නැවැත්විය හැකි බව", "වේගය වැඩි කළ හැකි බව", "ඕනෑම අවස්ථාවක හැරවිය හැකි බව"],
+        "answer": 0,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "නොකැඩුණු තනි සුදු ඉරක් මඟින් රේඛාව කැපීම හෝ ඉස්සර කිරීම සපුරා තහනම් බව දක්වයි."
+    },
+    {
+        "id": 5,
+        "question": "වටරවුමකට ඇතුළු වන විට රියදුරෙකු ප්‍රමුඛතාවය දිය යුත්තේ කාටද?",
+        "options": ["වම්පසින් පැමිණෙන වාහනවලට", "පිටුපසින් වේගයෙන් පැමිණෙන වාහනවලට", "දකුණුපසින් වටරවුම තුළ දැනටමත් ධාවනය වන වාහනවලට", "පදිකයින්ට පමණි"],
+        "answer": 2,
+        "category": "ප්‍රමුඛතා රීති",
+        "explanation": "වටරවුම් රීතියට අනුව, සැමවිටම තම දකුණුපසින් වටරවුම තුළ ගමන් කරමින් පවතින වාහනවලට මුලින්ම ඉඩ දිය යුතුය."
+    },
+    {
+        "id": 6,
+        "question": "ධාවනය වෙමින් පවතින වාහනයක තිරිංග (Brakes) හදිසියේ අක්‍රිය වුවහොත් මුලින්ම කළ යුත්තේ කුමක්ද?",
+        "options": ["එන්ජිම ක්‍රියා විරහිත කිරීම", "ගියර් එකෙන් එක පහළ දමමින් එන්ජින් තිරිංග (Engine Braking) භාවිත කිරීම", "අත් තිරිංග (Handbrake) එකවරම තදින් ඇදීම", "වාහනයෙන් බිමට පැනීම"],
+        "answer": 1,
+        "category": "හදිසි අවස්ථා",
+        "explanation": "තිරිංග බාල වූ විට පහළ ගියර් වලට මාරු වෙමින් එන්ජිමේ ප්‍රතිරෝධය මඟින් වේගය පාලනය කිරීම ආරක්ෂිතම ක්‍රමයයි."
+    },
+    {
+        "id": 7,
+        "question": "මාර්ගයක් අයිනේ ඇඳ ඇති තනි කහ ඉරෙන් (Single Yellow Line) අඟවන්නේ කුමක්ද?",
+        "options": ["වාහන නැවැත්වීම (Parking) තහනම් බව", "වාහන නැවැත්වීම සහ මගීන් නැංවීම යන දෙකම තහනම් බව", "ඉස්සර කිරීම තහනම් බව", "වේග සීමා කලාපයක් අවසන් බව"],
+        "answer": 0,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "තනි කහ ඉරක් මඟින් නියමිත වේලාවන් තුළ එම මාර්ගය අයිනේ වාහන නවතා තැබීම (Parking) තහනම් බව දක්වයි."
+    },
+    {
+        "id": 8,
+        "question": "රියදුරෙකු ජංගම දුරකථනයක් භාවිත කළ යුත්තේ කුමන අවස්ථාවකදීද?",
+        "options": ["වාහනය ආරක්ෂිත ස්ථානයක නවත්වා එන්ජිම ක්‍රියා විරහිත කර ඇති විට", "වාහනය සෙමින් ධාවනය වන විට", "ට්‍රැෆික් සංඥාවක රතු ආලෝකයට නවත්වා ඇති විට", "හෑන්ඩ්ස්-ෆ්‍රී (Hands-free) කිට් එකක් තිබේ නම් ධාවනය වන ඕනෑම වෙලාවක"],
+        "answer": 0,
+        "category": "රියදුරු වගකීම්",
+        "explanation": "රිය පැදවීමේදී ජංගම දුරකථන භාවිතය සපුරා තහනම්ය. දුරකථන ඇමතුමක් ගැනීමට හෝ බැලීමට නම් වාහනය ආරක්ෂිතව පාරෙන් ඉවතට කර නවත්වා සිටිය යුතුය."
+    },
+    {
+        "id": 9,
+        "question": "ඉදිරියෙන් ඇති වාහනයක් පසුකර යාමට (Overtake කිරීමට) වඩාත්ම සුදුසු පැත්ත කුමක්ද?",
+        "options": ["වම්පසින් පමණි", "දකුණුපසින් පමණි", "ඉඩ ඇති ඕනෑම පැත්තකින්", "පදික වේදිකාව දෙසින්"],
+        "answer": 1,
+        "category": "රථවාහන නීති",
+        "explanation": "ශ්‍රී ලංකාවේ වාහන ධාවනය වන්නේ වම්පසින් බැවින්, ඉදිරි වාහනයක් ඉස්සර කළ යුත්තේ සැමවිටම එම වාහනයේ දකුණුපසින් පමණි."
+    },
+    {
+        "id": 10,
+        "question": "රාත්‍රී කාලයේදී වෙනත් වාහනයක් පිටුපසින් ධාවනය කරන විට ඔබ කළ යුත්තේ කුමක්ද?",
+        "options": ["දුර ආලෝකය (High Beam) දල්වාගෙන යාම", "ළඟ ආලෝකය (Low Beam) භාවිත කිරීම", "සියලුම ලාම්පු නිවා දැමීම", "ෆ්ලෑෂර් ලාම්පු දල්වාගෙන යාම"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "පෙරටුගාමී වාහනයේ රියදුරුට තමන්ගේ කැඩපත් (Mirrors) හරහා ආලෝකය පරාවර්තනය වී දෑස් නිලංකාර වීම වැළැක්වීමට ළඟ ආලෝකය (Dim light/Low beam) භාවිත කළ යුතුය."
+    },
+    {
+        "id": 11,
+        "question": "පදික මාරුවක් (Zebra Crossing) අසලට පැමිණෙන විට රියදුරෙකුගේ වගකීම කුමක්ද?",
+        "options": ["නලා ශබ්ද කරමින් වේගයෙන් යාම", "වේගය අඩු කර, පදිකයින් සිටී නම් ඔවුන්ට මාරුවීමට ඉඩ දී නැවතීම", "පදිකයින්ට නොනවත්වා මාරුවන ලෙස අතින් සංඥා කිරීම", "පදික මාරුව මත වාහනය නවත්වා තැබීම"],
+        "answer": 1,
+        "category": "රියදුරු වගකීම්",
+        "explanation": "පදික මාරුවක් අසලදී පදිකයින්ට නීත්‍යානුකූල ප්‍රමුඛතාව හිමිවේ. එබැවින් වේගය අඩු කර ඔවුන්ට මාරුවීමට ඉඩ දිය යුතුය."
+    },
+    {
+        "id": 12,
+        "question": "කහ පැහැති ඇඹරුම් ආලෝකයක් (Flashing Amber Light) මඟින් මංසන්ධියකදී අඟවන්නේ කුමක්ද?",
+        "options": ["සම්පූර්ණයෙන්ම නවතින්න", "වේගයෙන් ඉදිරියට යන්න", "පරීක්ෂාකාරීව සහ අවධානයෙන් යුතුව ඉදිරියට යන්න", "මාර්ගය වසා ඇති බව"],
+        "answer": 2,
+        "category": "මාර්ග සංඥා",
+        "explanation": "නිවෙමින් දැල්වෙන කහ ආලෝකයෙන් කියවෙන්නේ ස්වයංක්‍රීය සංඥා පද්ධතිය ක්‍රියා විරහිත හෝ අක්‍රිය බැවින් අවට බලා පරිස්සමෙන් ඉදිරියට යන ලෙසයි."
+    },
+    {
+        "id": 13,
+        "question": "පසුපස බලන කැඩපතෙන් (Rearview Mirror) නොපෙනෙන, වාහනයට දෙපසින් ඇති කලාප හඳුන්වන්නේ කෙසේද?",
+        "options": ["පැති කලාප (Side zones)", "අන්ධ කලාප (Blind spots)", "ආරක්ෂිත කලාප (Safe zones)", "පැහැදිලි කලාප (Clear zones)"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "කැඩපත් වලට හසුනොවන, රියදුරුට කෙලින්ම හිස හරවා බැලිය යුතු ප්‍රදේශ අන්ධ කලාප (Blind spots) ලෙස හැඳින්වේ."
+    },
+    {
+        "id": 14,
+        "question": "ධාවන පථ දෙකක් මැද ඇඳ ඇති කඩ ඉරකින් (Broken White Line) අදහස් කරන්නේ කුමක්ද?",
+        "options": ["කිසිසේත්ම තීරුව මාරු කළ නොහැකි බව", "ආරක්ෂිත පරිදි තීරුව මාරු කිරීමට හෝ ඉස්සර කිරීමට අවසර ඇති බව", "එහි වාහන නැවැත්විය හැකි බව", "වේග සීමාව අවසන් බව"],
+        "answer": 1,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "කඩ ඉරි සහිත සලකුණක් ඇති ස්ථානවලදී, ආරක්ෂාව පිළිබඳ සැක හැර දැන ගැනීමෙන් පසු තීරුව මාරු කිරීමට හෝ ඉස්සර කිරීමට බාධාවක් නැත."
+    },
+    {
+        "id": 15,
+        "question": "ප්‍රධාන මාර්ගයකට අනුබද්ධ (උප) මාර්ගයකින් ඇතුළු වන වාහනයක් අනුගමනය කළ යුතු රීතිය කුමක්ද?",
+        "options": ["ප්‍රධාන මාර්ගයේ එන වාහනවලට ප්‍රමුඛතාවය දී ඉඩ දිය යුතුය", "ප්‍රධාන මාර්ගයේ වාහන තමන්ට ඉඩ දෙනතුරු නලා ශබ්ද කළ යුතුය", "කිසිදු නැවතීමකින් තොරව වේගයෙන් ඇතුළු විය යුතුය", "ප්‍රමුඛතාවය තමන්ට හිමිවේ"],
+        "answer": 0,
+        "category": "ප්‍රමුඛතා රීති",
+        "explanation": "උප මාර්ගයක සිට ප්‍රධාන මාර්ගයකට ඇතුළු වන විට, ප්‍රධාන මාර්ගයේ ගමන් ගන්නා වාහනවලට ප්‍රමුඛතාවය දීම අනිවාර්ය වේ."
+    },
+    {
+        "id": 16,
+        "question": "නැවැත්වීමේ සංඥා පුවරුවක (STOP Sign) හැඩය කුමක්ද?",
+        "options": ["රවුම් හැඩය", "ත්‍රිකෝණ හැඩය", "අෂ්ටාස්‍ර හැඩය (පැති අටක් ඇති)", "චතුරස්‍ර හැඩය"],
+        "answer": 2,
+        "category": "මාර්ග සංඥා",
+        "explanation": "ලෝකයේ ඕනෑම රටක STOP සංඥා පුවරුව දුරදීම හඳුනාගත හැකි පරිදි පැති අටක් සහිත අෂ්ටාස්‍ර (Octagon) හැඩයෙන් නිපදවයි."
+    },
+    {
+        "id": 17,
+        "question": "අධිවේගී මාර්ගයක (Expressway) සැහැල්ලු මෝටර් රථයක් සඳහා වන උපරිම වේග සීමාව කොපමණද?",
+        "options": ["60 km/h", "80 km/h", "100 km/h", "120 km/h"],
+        "answer": 2,
+        "category": "වේග සීමා",
+        "explanation": "ශ්‍රී ලංකාවේ අධිවේගී මාර්ග පද්ධතිය තුළ සැහැල්ලු වාහන (කාර්, ජීප් සහ වෑන්) සඳහා උපරිම වේග සීමාව 100 km/h වේ."
+    },
+    {
+        "id": 18,
+        "question": "හදිසි අනතුරු සංඥා ලාම්පු (Hazard Lights / 4-way flashers) දැල්විය යුත්තේ කුමන අවස්ථාවකදීද?",
+        "options": ["වැස්සේ වේගයෙන් ධාවනය වන විට", "වාහනය කාර්මික දෝෂයකට ලක්වී මාර්ගයේ අවහිර වන සේ නතර වූ විට", "මංසන්ධියකින් කෙලින්ම ඉදිරියට යන විට", "නැවැත්වීම තහනම් ස්ථානයක වාහනය නතර කිරීමට අවශ්‍ය වූ විට"],
+        "answer": 1,
+        "category": "හදිසි අවස්ථා",
+        "explanation": "හැසන්ඩ් ලාම්පු දැල්විය යුත්තේ තමන්ගේ වාහනය කැඩී යාමකින් හෝ අනතුරකින් මාර්ගයට අවහිරයක් වී ඇති බව අනෙක් අයට ඇඟවීමට පමණි."
+    },
+    {
+        "id": 19,
+        "question": "ඉදිරියෙන් යන වාහනයත් ඔබේ වාහනයත් අතර තබා ගත යුතු අවම ආරක්ෂිත පරතරය මැනීමට භාවිත කරන රීතිය කුමක්ද?",
+        "options": ["තත්පර පහේ රීතිය", "තත්පර දෙකේ රීතිය (Two-Second Rule)", "මීටර් දහයේ රීතිය", "විනාඩියේ රීතිය"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "වියළි සාමාන්‍ය මාර්ගයක ඉදිරි වාහනය පසුකරන ස්ථාවර ලක්ෂ්‍යයක්, ඔබ පසුකිරීමට අවම වශයෙන් තත්පර 2ක් වත් ගතවිය යුතුය."
+    },
+    {
+        "id": 20,
+        "question": "ශ්‍රී ලංකාවේ වලංගු සැහැල්ලු වාහන රියදුරු බලපත්‍රයක් ලබා ගත හැකි අවම වයස් සීමාව කීයද?",
+        "options": ["වයස අවුරුදු 16", "වයස අවුරුදු 17", "වයස අවුරුදු 18", "වයස අවුරුදු 21"],
+        "answer": 2,
+        "category": "රියදුරු වගකීම්",
+        "explanation": "මෝටර් රථ ප්‍රවාහන පනතට අනුව සැහැල්ලු වාහන (B කණ්ඩය) සඳහා බලපත්‍රයක් ඉල්ලුම් කිරීමට අවුරුදු 18 සම්පූර්ණ විය යුතුය."
+    },
+    {
+        "id": 21,
+        "question": "මාර්ගයේ ඇඳ ඇති 'කහ දැල් සලකුණක්' (Yellow Box Junction) සහිත ස්ථානයකට රියදුරෙකු ඇතුළු විය යුත්තේ කවදාද?",
+        "options": ["තමන්ට යාමට අවශ්‍ය පිටවීම් පථය පැහැදිලිව හිස්ව පවතී නම් පමණි", "රතු ආලෝකය දැල්වී තිබුණත් ට්‍රැෆික් වැඩි නම්", "නලා ශබ්ද කරමින් ඕනෑම වෙලාවක", "ඉදිරි වාහනය පෙට්ටිය මැද නතර වී ඇත්නම්"],
+        "answer": 0,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "කහ කොටුව (Box Junction) තුළ වාහන නැවැත්වීම තහනම්ය. ඔබට කොටුවෙන් පිටතට යාමට ඉඩ තිබේ නම් පමණක් එයට ඇතුළු විය හැක."
+    },
+    {
+        "id": 22,
+        "question": "බෑවුම් සහිත (කන්දක්) මාර්ගයක ඉහළට යන වාහනයක් සහ පහළට එන වාහනයක් හමුවූ විට ප්‍රමුඛතාවය කාටද?",
+        "options": ["පහළට එන වාහනයට", "ඉහළට යන වාහනයට (Upward vehicle)", "විශාලත්වයෙන් වැඩි වාහනයට", "මුලින්ම නලා ශබ්ද කරන වාහනයට"],
+        "answer": 1,
+        "category": "ප්‍රමුඛතා රීති",
+        "explanation": "කන්දක් ඉහළට යන වාහනයකට නැවත ගමන ආරම්භ කිරීම අපහසු බැවින්, පහළට එන වාහනය ඉඩ දී ප්‍රමුඛතාවය දිය යුතුය."
+    },
+    {
+        "id": 23,
+        "question": "පසුපසින් පැමිණෙන ගිලන් රථයක් (Ambulance) සෙරීනා නාදය සහ ආලෝක සංඥා නිකුත් කරන්නේ නම් ඔබ කළ යුත්තේ කුමක්ද?",
+        "options": ["එයට වඩා වේගයෙන් ධාවනය කිරීම", "වාහනය වම්පසට කර එයට බාධාවකින් තොරව යාමට වහාම ඉඩ සැලසීම", "මාර්ගය මැද වාහනය නවත්වා දැමීම", "කිසිවක් නොකර සාමාන්‍ය පරිදි ධාවනය කිරීම"],
+        "answer": 1,
+        "category": "හදිසි අවස්ථා",
+        "explanation": "හදිසි සේවා වාහන (ගිලන් රථ, ගිනි නිවන) පැමිණෙන විට වහාම වම්පසට කර මාර්ගය නිදහස් කර දීම නීතිමය වගකීමකි."
+    },
+    {
+        "id": 24,
+        "question": "මාර්ගයක වටකුරු නිල් පැහැති පසුබිමක සුදු ඊතලයක් සහිත සංඥාවකින් අඟවන්නේ කුමක්ද?",
+        "options": ["අනිවාර්ය නියෝගාත්මක සංඥාවකි (Mandatory Sign)", "තහනම් කිරීමේ සංඥාවකි", "තොරතුරු සැපයීමේ සංඥාවකි", "අනතුරු ඇඟවීමකි"],
+        "answer": 0,
+        "category": "මාර්ග සංඥා",
+        "explanation": "නිල් පැහැති රවුම් පුවරු මඟින් රියදුරෙකු අනිවාර්යයෙන්ම කළ යුතු නියෝග (උදා: වමට හැරෙන්න) නිරූපණය කරයි."
+    },
+    {
+        "id": 25,
+        "question": "පාසලක් අසල මාර්ගයක ධාවනය කිරීමේදී රියදුරන් විශේෂයෙන්ම සැලකිලිමත් විය යුත්තේ ඇයි?",
+        "options": ["ළමුන් අනපේක්ෂිත ලෙස මාර්ගයට පැමිණීමට ඉඩ ඇති බැවින්", "පාරවල් පළල වැඩි බැවින්", "එහි වේගයෙන් යා හැකි බැවින්", "පොලිස් නිලධාරීන් වැඩිපුර සිටින බැවින්"],
+        "answer": 0,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "පාසල් කලාපවලදී කුඩා ළමුන් නොසිතූ මොහොතක පාරට පැනීමට ඉඩ ඇති බැවින් වේගය සීමා කර දැඩි අවධානයෙන් යා යුතුය."
+    },
+    {
+        "id": 26,
+        "question": "රියදුරු බලපත්‍රයක් නොමැති අයෙකුට ඔබේ වාහනය පැදවීමට දීමෙන් සිදුවන්නේ කුමක්ද?",
+        "options": ["එය නීත්‍යානුකූල වන අතර වරදක් නොවේ", "රියදුරු සහ වාහන අයිතිකරු යන දෙදෙනාම නීතියට වැරදිකරුවන් වේ", "වාහන අයිතිකරුට පමණක් දඩ ගැසේ", "කිසිදු ගැටලුවක් මතු නොවේ"],
+        "answer": 1,
+        "category": "රියදුරු වගකීම්",
+        "explanation": "වලංගු බලපත්‍රයක් නැති අයෙකුට වාහනයක් පැදවීමට අවසර දීම බරපතල නීතිමය වරදක් වන අතර අයිතිකරුද එයට වගකිව යුතුය."
+    },
+    {
+        "id": 27,
+        "question": "ශ්‍රී ලංකාවේ මහා මාර්ගයක ධාවනය සඳහා අනුමත උපරිම රුධිර මධ්‍යසාර සාන්ද්‍රණය (Blood Alcohol Level) කොපමණද?",
+        "options": ["0.08グラム/l (0.08%)", "0.03グラム/l (0.03%)", "0.05グラム/l (0.05%)", "0.00グラム/l (මත්පැන් සම්පූර්ණයෙන්ම තහනම්)"],
+        "answer": 1,
+        "category": "රථවාහන නීති",
+        "explanation": "ලංකාවේ නීතියට අනුව රුධිරයේ අඩංගු විය හැකි උපරිම මධ්‍යසාර සීමාව 0.03% (ග්‍රෑම්/ලීටර් 0.3) වේ. එය ඉක්මවීම දඬුවම් ලැබිය හැකි වරදකි."
+    },
+    {
+        "id": 28,
+        "question": "මංසන්ධියකදී වමට හැරවීමට බලාපොරොත්තු වන රියදුරෙකු සංඥා ආලෝකය (Signal) දැල්විය යුත්තේ කවදාද?",
+        "options": ["හැරවීමට මීටර් 50 කට පමණ පෙර සිට", "හැරෙන අවස්ථාවේදීම පමණි", "හැරී අවසන් වූ පසුව", "සංඥා දැල්වීම අවශ්‍ය නොවේ"],
+        "answer": 0,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "පිටුපසින් සහ ඉදිරියෙන් එන වාහනවලට ඔබගේ අභිප්‍රාය කල්තියා දැනගැනීමට හැකිවන පරිදි අවම වශයෙන් මීටර් 50කට පෙර සංඥා දැමිය යුතුය."
+    },
+    {
+        "id": 29,
+        "question": "පාරේ දාරයේ ඇඳ ඇති 'කැඩුණු කහ ඉරි වැලකින්' අඟවන්නේ කුමක්ද?",
+        "options": ["මගීන් නැංවීමට සහ බැස්සවීමට පමණක් කෙටි වේලාවකට නැවැත්විය හැකි බව", "වාහන දින ගණන් පාක් කළ හැකි බව", "එතැනින් එහාට පාර වසා ඇති බව", "ඉස්සර කිරීම තහනම් බව"],
+        "answer": 0,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "කැඩුණු කහ ඉරෙන් දැක්වෙන්නේ වාහන දීර්ඝව නැවැත්වීම (Parking) තහනම් වුවද, බඩු පැටවීමට හෝ මගීන් බැස්සවීමට කෙටි නැවතීමක් කළ හැකි බවයි."
+    },
+    {
+        "id": 30,
+        "question": "ඝන මීදුම හෝ අධික වර්ෂාව පවතින අවස්ථාවක දෘශ්‍යතාව (Visibility) වැඩි කර ගැනීමට භාවිත කරන්නේ කුමක්ද?",
+        "options": ["මීදුම නාශක ලාම්පු (Fog Lamps)", "දුර ආලෝකය (High Beam)", "රතු අභ්‍යන්තර ආලෝකය", "ඩෑෂ්බෝඩ් ආලෝකය පමණි"],
+        "answer": 0,
+        "category": "හදිසි අවස්ථා",
+        "explanation": "මීදුම හෝ ධාරානිපාත වැස්සේදී සාමාන්‍ය ලාම්පු මඟින් ආලෝකය පරාවර්තනය වන නිසා, මීදුම නාශක ලාම්පු (Fog lamps) භාවිතය සුදුසුය."
+    },
+    {
+        "id": 31,
+        "question": "රතු පැහැති රවුම් තීරුවක් ඇතුළත සුදු පසුබිමක් සහිත පුවරු මඟින් පොදුවේ අඟවන්නේ කුමක්ද?",
+        "options": ["තොරතුරු සපයන සංඥා", "යම් ක්‍රියාවක් තහනම් කරන නියෝග (Prohibitory Signs)", "ඉදිරියෙන් ඇති අනතුරු", "නැවතී සිටීමට අවසර ඇති බව"],
+        "answer": 1,
+        "category": "මාර්ග සංඥා",
+        "explanation": "රතු පැහැති රවුම් මායිමක් සහිත පුවරු මඟින් යම්කිසි ක්‍රියාවක් (උදා: ඇතුළුවීම තහනම්, හැරවීම තහනම්) තහනම් කර ඇති බව දක්වයි."
+    },
+    {
+        "id": 32,
+        "question": "පටු පාලමක් මතදී ප්‍රතිවිරුද්ධ දිශාවෙන් පැමිණෙන වාහනයකට මුලින්ම ඉඩ දිය යුත්තේ කවුද?",
+        "options": ["පාලමට වඩාත්ම දුරින් සිටින වාහනය", "පාලම අසලට මුලින්ම පැමිණි වාහනය", "පාලම මත ධාවනය සඳහා ප්‍රමුඛතා සංඥාව අහිමි වාහනය", "විශාල වාහනය"],
+        "answer": 2,
+        "category": "ප්‍රමුඛතා රීති",
+        "explanation": "පටු පාලම් අසල ඇති රතු සහ කළු ඊතල සහිත පුවරුවෙන් තමන්ගේ පැත්තට ප්‍රමුඛතාවය නැති බව දක්වන්නේ නම්, ප්‍රතිවිරුද්ධ වාහනයට ඉඩ දිය යුතුය."
+    },
+    {
+        "id": 33,
+        "question": "වාහනයක් පදවන සෑම අවස්ථාවකදීම රියදුරු ළඟ අනිවාර්යයෙන්ම තිබිය යුතු ලේඛන මොනවාද?",
+        "options": ["රියදුරු බලපත්‍රය, ආදායම් බලපත්‍රය සහ රක්ෂණ සහතිකය", "වාහනයේ උප්පැන්න සහතිකය පමණි", "ජාතික හැඳුනුම්පත පමණි", "බැංකු පොත සහ රියදුරු බලපත්‍රය"],
+        "answer": 0,
+        "category": "රියදුරු වගකීම්",
+        "explanation": "නීත්‍යානුකූලව වාහනයක් පොදු මාර්ගයක ධාවනය කිරීමේදී වලංගු රියදුරු බලපත්‍රය, ආදායම් බලපත්‍රය (Revenue License) සහ රක්ෂණ සහතිකය (Insurance) තිබීම අනිවාර්ය වේ."
+    },
+    {
+        "id": 34,
+        "question": "ඔබ ඉදිරියෙන් යන වාහනයක් ඉස්සර කිරීමට (Overtake) නොකළ යුතු ස්ථානයක් වන්නේ පහත සඳහන් කවරක්ද?",
+        "options": ["සෘජු තනි මාර්ගයකදී", "පදික මාරුවක්, වංගුවක් හෝ කන්දක් මුදුනක් අසලදී", "විවෘත තැනිතලා මාර්ගයකදී", "වාහන අඩු වෙලාවකදී"],
+        "answer": 1,
+        "category": "රථවාහන නීති",
+        "explanation": "වංගු, කඳු මුදුන් සහ පදික මාරු අසලදී ඉදිරි දෘශ්‍යතාව අවහිර වන බැවින් හෝ පදිකයින් සිටිය හැකි බැවින් ඉස්සර කිරීම අනතුරුදායකය."
+    },
+    {
+        "id": 35,
+        "question": "Aquaplaning (ජල ලිස්සුම) යනු කුමක්ද?",
+        "options": ["වාහනය සේදීමේදී සිදුවන ක්‍රියාවලියකි", "තෙත් මාර්ගයක ධාවනයේදී ටයරය සහ පාර අතර ජල ස්ථරයක් නිසා ටයරයේ ග්‍රහණය ගිලිහී ලිස්සා යාම", "රේඩියේටරයෙන් ජලය පිටතට පැනීම", "තිරිංග පද්ධතියට ජලය පිරීම"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "අධික වැසි සහිත වෙලාවල පාරේ වතුර පිරී ඇති විට, වාහනයේ වේගය වැඩි වුවහොත් ටයර් පාරෙන් මිදී වතුර මත පාවී පාලනයෙන් ගිලිහී යයි."
+    },
+    {
+        "id": 36,
+        "question": "මාර්ගයේ වම්පස කෙළවරේ ඇඳ ඇති තනි නොකැඩුණු සුදු ඉරෙන් (Edge Line) අඟවන්නේ කුමක්ද?",
+        "options": ["පදිකයින්ට පමණක් අයිති තීරුවක්", "ධාවනය කළ හැකි මාර්ගයේ මායිම (Edge of the carriageway)", "වාහන නැවැත්වීම සපුරා තහනම් ස්ථානයක්", "අධිවේගී මාර්ගයක ආරම්භය"],
+        "answer": 1,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "මාර්ගයේ දාරය දැක්වෙන මෙම ඉර මඟින් රියදුරුට රාත්‍රී කාලයේදී පාරේ සීමාව හඳුනාගෙන පාරෙන් ඉවතට පැනීම වැළැක්වීමට උදවු වේ."
+    },
+    {
+        "id": 37,
+        "question": "ඔබේ වාහනය පසුකර යාමට වෙනත් වාහනයක් උත්සාහ කරන විට ඔබ කළ යුත්තේ කුමක්ද?",
+        "options": ["ඔබේ වාහනයේ වේගය වැඩි කිරීම", "වේගය එලෙසම තබාගෙන හෝ සුළු වශයෙන් අඩු කර වම්පසට ඉඩ දීම", "පාර මැදින් ධාවනය කිරීම", "දිගටම නලා ශබ්ද කිරීම"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "අනෙක් වාහනයට ආරක්ෂිතව ඉස්සර කිරීමට ඉඩ සැලසීම සඳහා ඔබේ වේගය වැඩි නොකර, පාරේ වම්පසින් ධාවනය කළ යුතුය."
+    },
+    {
+        "id": 38,
+        "question": "ආරක්ෂිත නොවන දුම්රිය හරස් මාර්ගයක් (Unprotected Railway Crossing) අසලදී රියදුරෙකු කළ යුත්තේ කුමක්ද?",
+        "options": ["වේගයෙන් දුම්රිය පථය තරණය කිරීම", "වාහනය නවත්වා, ඇන්ජිම ක්‍රියා විරහිත කර, දෙපස බලා දුම්රියක් නොමැති බව තහවුරු කරගෙන ඉදිරියට යාම", "දුම්රියක් එනවාදැයි නලා ශබ්ද කර බැලීම", "කිසිදු වෙනසක් නොකර ධාවනය කිරීම"],
+        "answer": 1,
+        "category": "හදිසි අවස්ථා",
+        "explanation": "ආරක්ෂිත ගේට්ටු නොමැති දුම්රිය හරස් මාර්ගවලදී වාහනය නවත්වා, කන් යොමු කර සහ දෑසින් බලා දුම්රියක් නොඑන බව සහතික කරගෙන මාරු විය යුතුය."
+    },
+    {
+        "id": 39,
+        "question": "සැහැල්ලු වාහනයක් පදවන විට 'ආසන පටි' (Seat Belts) පැළඳිය යුත්තේ කවුද?",
+        "options": ["රියදුරු පමණි", "ඉදිරි අසුනේ සිටින රියදුරු සහ මගියා පමණි", "වාහනයේ ගමන් කරන, ආසන පටි පහසුකම ඇති සියලුම දෙනා", "කිසිවෙකු පැළඳීම අනිවාර්ය නොවේ"],
+        "answer": 2,
+        "category": "රියදුරු වගකීම්",
+        "explanation": "ශ්‍රී ලංකාවේ නීතියට අනුව මෙන්ම ආරක්ෂාව අතින්ද වාහනයක ගමන් ගන්නා සියලුම මගීන් ආසන පටි පැළඳීම අනිවාර්ය වේ."
+    },
+    {
+        "id": 40,
+        "question": "පාරක ඇති 'සිග්සැග් ඉරි' (Zig-zag lines) මඟින් දක්වන්නේ කුමක්ද?",
+        "options": ["ඉදිරියෙන් පදික මාරුවක් ඇති බැවින් එතැන වාහන නැවැත්වීම හෝ ඉස්සර කිරීම සපුරා තහනම් බව", "එම කලාපයේ වංගු බහුල බව", "වාහන සිග්සැග් ආකාරයට ධාවනය කළ යුතු බව", "රථ ගාලක් ඇති බව"],
+        "answer": 0,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "පදික මාරුවකට පෙර දෙපස ඇඳ ඇති සුදු සිග්සැග් ඉරි තුළ වාහන නැවැත්වීම, නැවතීම හෝ ඉස්සර කිරීම සපුරා තහනම්ය."
+    },
+    {
+        "id": 41,
+        "question": "පොදු මාර්ගයක උපරිම බර සීමාවන් දක්වන පුවරුවක් කුමන ප්‍රවර්ගයට අයත්ද?",
+        "options": ["තොරතුරු සපයන සංඥා", "අනතුරු ඇඟවීමේ සංඥා", "නියෝගාත්මක / තහනම් කිරීමේ සංඥා", "දිශා පෙන්වන සංඥා"],
+        "answer": 2,
+        "category": "මාර්ග සංඥා",
+        "explanation": "බර සීමාවන් (උදා: 5T) රතු රවුමක දර්ශනය වන අතර එය නීතිමය වශයෙන් අනුගමනය කළ යුතු නියෝගාත්මක සංඥාවකි."
+    },
+    {
+        "id": 42,
+        "question": "දුර දිගු ගමනකදී රියදුරුට නිදිමතක් හෝ දැඩි මහන්සියක් දැනුනහොත් කළ යුත්තේ කුමක්ද?",
+        "options": ["වාහනයේ වේගය වැඩි කර ඉක්මනින් ගමනාන්තයට යාම", "ආරක්ෂිත තැනක වාහනය නවත්වා විවේක ගැනීම හෝ කෙටි නින්දක් ලැබීම", "දිගටම සීතල වතුර බොමින් ධාවනය කිරීම", "රේඩියෝවේ ශබ්දය වැඩි කිරීම"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "නිදිමත කෝපි බීමෙන් හෝ මුහුණ සේදීමෙන් තාවකාලිකව මඟ හැරුණද, එකම පිළියම ආරක්ෂිතව වාහනය නවත්වා විවේක ගැනීමයි."
+    },
+    {
+        "id": 43,
+        "question": "ට්‍රැෆික් සංඥා පුවරුවක කොළ ආලෝකය දැල්වුණු සැණින් ඔබ කළ යුත්තේ කුමක්ද?",
+        "options": ["කිසිවක් නොබලා වේගයෙන් ඉදිරියට යාම", "මංසන්ධිය මැද වෙනත් වාහන හෝ පදිකයින් හිරවී නැති බව තහවුරු කරගෙන ඉදිරියට යාම", "නලා ශබ්ද කරමින් යාම", "ඊළඟ රතු ආලෝකය වැටෙනතුරු බලා සිටීම"],
+        "answer": 1,
+        "category": "මාර්ග සංඥා",
+        "explanation": "කොළ පැහැය වැටුණද, සමහරවිට අනෙක් පසින් පැමිණි වාහනයක් හෝ පදිකයෙකු මංසන්ධිය මැද සිටිය හැකි බැවින් අවධානයෙන් යා යුතුය."
+    },
+    {
+        "id": 44,
+        "question": "ගුවන් තොටුපළක් හෝ ක්‍රීඩාංගණයක් අසල ඇති සෘජුකෝණාස්‍රාකාර නිල් පුවරුවලින් දක්වන්නේ කුමක්ද?",
+        "options": ["නියෝගාත්මක සංඥා", "තොරතුරු සහ මඟපෙන්වීමේ සංඥා (Informative Signs)", "අනතුරු ඇඟවීම්", "තාවකාලික සලකුණු"],
+        "answer": 1,
+        "category": "මාර්ග සංඥා",
+        "explanation": "සෘජුකෝණාස්‍ර හැඩැති නිල් හෝ කොළ පුවරු මඟින් රියදුරන්ට විවිධ ස්ථාන සහ සේවාවන් පිළිබඳ තොරතුරු සපයයි."
+    },
+    {
+        "id": 45,
+        "question": "ටයරයක හුළං පීඩනය (Tyre Pressure) අඩු වූ විට සිදුවන අහිතකර බලපෑම කුමක්ද?",
+        "options": ["ඉන්ධන පිරිවැය අනවශ්‍ය ලෙස ඉහළ යාම සහ ටයරය ඉක්මනින් ගෙවී යාම", "වාහනයේ වේගය ඉබේම වැඩි වීම", "තිරිංග ක්‍රියාකාරිත්වය 100% ක් හොඳ වීම", "කිසිදු බලපෑමක් නැත"],
+        "answer": 0,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "හුළං අඩු වූ විට පාර සහ ටයරය අතර ඝර්ෂණය වැඩි වන නිසා එන්ජිමට වැඩි වෙහෙසක් දැරීමට සිදුවේ, එමඟින් තෙල් වැඩ කිරීම අඩු වේ."
+    },
+    {
+        "id": 46,
+        "question": "පාර මැද ඇඳ ඇති ද්විත්ව (තනි නොකැඩුණු ඉරි දෙකක්) සුදු ඉරිවලින් අඟවන්නේ කුමක්ද?",
+        "options": ["එක් පැත්තකට පමණක් ඉරි කැපිය හැකි බව", "දිශාවන් දෙකෙහිම වාහනවලට ඉරි කැපීම හෝ ඉස්සර කිරීම සපුරා තහනම් බව", "එය වාහන නැවැත්වීමේ තීරුවක් බව", "වේගය වැඩි කළ හැකි බව"],
+        "answer": 1,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "ද්විත්ව සුදු ඉරි (Double Continuous Lines) යනු ඉතා තදින්ම ඉස්සර කිරීම සහ ඉරි කැපීම තහනම් කළ ස්ථානවල අඳින සලකුණකි."
+    },
+    {
+        "id": 47,
+        "question": "පිටුපසින් එන වාහනයක් ඔබට වඩා ඉතා ආසන්නයෙන් (Tailgating) ධාවනය කරන්නේ නම් ඔබ කළ යුත්තේ කුමක්ද?",
+        "options": ["එකවරම තිරිංග තද කිරීම", "වේගය සෙමින් අඩු කර, ඔහුට ඔබව පසුකර යාමට ඉඩ සැලසීම", "ඔහුට බැන වැදීම", "වේගය තවත් වැඩි කිරීම"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "පිටුපස වාහනය ළඟින්ම එන විට වේගය සෙමින් බාල කිරීමෙන් ඉදිරි අනතුරකදී ඔබට හදිසි තිරිංග දැමීමට සිදුවීමේ සම්භාවිතාව අඩු වේ."
+    },
+    {
+        "id": 48,
+        "question": "රාත්‍රී කාලයේදී ප්‍රතිවිරුද්ධ දිශාවෙන් එන වාහනයක අධික ආලෝකය නිසා ඔබේ දෑස් නිලංකාර වුවහොත් කළ යුත්තේ කුමක්ද?",
+        "options": ["ඔබේ වාහනයේ දුර ආලෝකයද දල්වා ඔහුට බාධා කිරීම", "පාරේ වම්පස මායිම (Edge line) දෙස බලා වාහනය පාලනය කරගැනීම", "ඇස් වසා ගැනීම", "නලා ශබ්දය දිගටම නාද කිරීම"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "ඉදිරියෙන් එන ආලෝකය දෙස කෙලින්ම නොබලා, තමන්ගේ පැත්තේ වම් මායිම දෙස බැලීමෙන් දෑස් නිලංකාර වීමෙන් බේරී ආරක්ෂිතව ධාවනය කළ හැක."
+    },
+    {
+        "id": 49,
+        "question": "මෝටර් රථයක එන්ජින් ඔයිල් (Engine Oil) මට්ටම පරීක්ෂා කළ යුත්තේ කෙසේද?",
+        "options": ["එන්ජිම ක්‍රියාත්මක වෙමින් පවතින විට", "වාහනය සමතලා බිමක නවත්වා, එන්ජිම නිවා දමා සිසිල් වූ පසුව ඩිප්ස්ටික් (Dipstick) මඟින්", "වාහනය පදවන අතරතුර", "රේඩියේටරය දෙස බැලීමෙන්"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "නිවැරදි ඔයිල් මට්ටම බැලීමට නම් තෙල් සියල්ල පහළට බැස තිබිය යුතුය. එබැවින් සමතලා බිමක එන්ජිම නිවා පරීක්ෂා කළ යුතුය."
+    },
+    {
+        "id": 50,
+        "question": "පදිකයින් සඳහා වන මාර්ග සංඥාවක 'රතු මිනිසෙකුගේ' රූපය ස්ථාවරව දැල්වී ඇත්නම් එයින් අදහස් කරන්නේ කුමක්ද?",
+        "options": ["පදිකයින්ට මාර්ගය හරහා මාරු විය නොහැක", "පදිකයින්ට මාරු විය හැක", "වාහන නැවැත්විය යුතුය", "සංඥාව ක්‍රියා විරහිත බව"],
+        "answer": 0,
+        "category": "මාර්ග සංඥා",
+        "explanation": "පදික සංඥාවක රතු රූපයෙන් දැක්වෙන්නේ පදිකයින් පදික වේදිකාවේ නැවතී සිටිය යුතු අතර පාර මාරු නොවිය යුතු බවයි."
+    },
+    {
+        "id": 51,
+        "question": "මහා මාර්ගයක ධාවනය වන සැහැල්ලු වාහනයක උපරිම මගීන් සංඛ්‍යාව තීරණය වන්නේ කුමක් මතද?",
+        "options": ["වාහනයේ ප්‍රමාණය මත අයිතිකරුට කැමති පරිදි", "ආදායම් බලපත්‍රයේ සහ ලියාපදිංචි සහතිකයේ (CR) සඳහන් අනුමත ආසන සංඛ්‍යාව අනුව", "පොලිසිය පවසන ප්‍රමාණය අනුව", "වාහනයේ ඇති රෝද ගණන අනුව"],
+        "answer": 1,
+        "category": "රියදුරු වගකීම්",
+        "explanation": "ලියාපදිංචි සහතිකයේ (පොතේ) දක්වා ඇති උපරිම ආසන ගණනට වඩා මගීන් ප්‍රවාහනය කිරීම නීති විරෝධී වේ."
+    },
+    {
+        "id": 52,
+        "question": "නැවැත්වීමේ ඉර (Stop Line) ඇඳ ඇත්තේ මාර්ගයේ කුමන ස්ථානයකද?",
+        "options": ["සංඥා ලාම්පු හෝ පදික මාරු සහිත මංසන්ධිවලට මඳක් ඉදිරියෙන් හරස් අතට", "මාර්ගයේ දිග අතට මැදින්", "පදික වේදිකාව මත", "අධිවේගී මාර්ගයේ පමණි"],
+        "answer": 0,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "නැවැත්වීමේ ඉර යනු මංසන්ධියකට හෝ පදික මාරුවකට පෙර වාහන නතර කළ යුතු සීමාව දක්වන හරස් සුදු ඉරකි."
+    },
+    {
+        "id": 53,
+        "question": "ඉදිරියෙන් ඇති වංගුවක් නුදුරින්ම පවතින බව පෙන්වන පුවරුවක් කුමන හැඩයේ එකක්ද?",
+        "options": ["රවුම් හැඩයේ", "චතුරස්‍ර හැඩයේ", "උඩු අතට හැරුණු ත්‍රිකෝණ හැඩයේ", "දිගටි සෘජුකෝණාස්‍ර හැඩයේ"],
+        "answer": 2,
+        "category": "මාර්ග සංඥා",
+        "explanation": "අනතුරු ඇඟවීම් සියල්ලම පාහේ උඩු අතට මුදුන ඇති ත්‍රිකෝණාකාර පුවරුවල කහ පසුබිමක කළු සලකුණෙන් දක්වයි."
+    },
+    {
+        "id": 54,
+        "question": "ප්‍රධාන මාර්ගයක ගමන් ගන්නා වාහනයක් තවත් වාහනයකට 'ඉඩ දීමේ' (Give Way) සලකුණක් ඇඳ ඇත්තේ කුමන හැඩයකින්ද?",
+        "options": ["යටිකුරු වූ ත්‍රිකෝණ හැඩයෙන් (Inverted Triangle)", "රවුම් හැඩයෙන්", "කොළ පැහැති කොටුවකින්", "තරු ලකුණකින්"],
+        "explanation": "Give Way හෝ ඉඩදීමේ සංඥා පුවරුව පහළට මුදුන හැරුණු සුවිශේෂී ත්‍රිකෝණාකාර හැඩයකින් යුක්ත වේ.",
+        "answer": 0,
+        "category": "මාර්ග සංඥා"
+    },
+    {
+        "id": 55,
+        "question": "වාහනයක් පසුපසට ධාවනය කිරීමේදී (Reversing) වඩාත්ම සැලකිලිමත් විය යුත්තේ ඇයි?",
+        "options": ["පසුපස අන්ධ කලාප වැඩි බැවින් කුඩා ළමුන් හෝ බාධක හැපීමට ඉඩ ඇති නිසා", "වාහනයේ වේගය වැඩි වන නිසා", "එය නීති විරෝධී නිසා", "ඉන්ධන වැඩිපුර වැයවන නිසා"],
+        "answer": 0,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "වාහනය පිටුපසට ගැනීමේදී රියදුරු අසුනට නොපෙනෙන සීමාවන් බහුල බැවින් ඉතා සෙමින් සහ අවධානයෙන් කළ යුතුය."
+    },
+    {
+        "id": 56,
+        "question": "පාසල් බස් රථයක් ළමුන් බැස්සවීම සඳහා පාර අයිනේ නවත්වා ඇති විට ඔබ කළ යුත්තේ කුමක්ද?",
+        "options": ["වේගයෙන් සහ නලා ශබ්ද කරමින් පසුකර යාම", "වේගය උපරිමයෙන් අඩු කර, ළමුන් පාරට පනින්නේදැයි බලා පරීක්ෂාකාරීව පසුකිරීම", "බස් රථය පිටුපසින්ම නතර වී සිටීම", "කිසිදු වෙනසක් නොකර යාම"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "පාසල් වාහන අසලින් යන විට ළමුන් එකවරම බස් රථයට ඉදිරියෙන් පාර මාරු වීමට ඉඩ ඇති බැවින් දැඩි විමසිල්ලෙන් යා යුතුය."
+    },
+    {
+        "id": 57,
+        "question": "මාර්ගයක ඇඳ ඇති 'ද්විත්ව කඩ ඉරිවලින්' (Double Broken Lines) අදහස් කරන්නේ කුමක්ද?",
+        "options": ["මාර්ගයේ දිශාව වෙනස් වන බව", "පාලනය කළ හැකි මංතීරු (Reversible lanes) හෝ ඉදිරියේදී නොකැඩුණු ඉරි බවට පත්වන සීමාවන්", "වාහන නැවැත්වීමේ කලාප", "පදිකයින්ට පමණක් වෙන්වූ තීරුවක්"],
+        "answer": 1,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "ද්විත්ව කඩ ඉරි මඟින් ඉදිරියේදී තද නීති සහිත නොකැඩුණු ඉරි හමුවන බවට කල්තියා අනතුරු අඟවයි."
+    },
+    {
+        "id": 58,
+        "question": "රියදුරු බලපත්‍රයක් ලබා ගැනීමට ප්‍රථම පවත්වන වෛද්‍ය පරීක්ෂණයෙන් ප්‍රධාන වශයෙන්ම බලනු ලබන්නේ කුමක්ද?",
+        "options": ["ශාරීරික යෝග්‍යතාවය, පෙනීම සහ ශ්‍රවණ ශක්තිය (Vision & Hearing)", "උස සහ බර පමණි", "ලේ වර්ගය පමණි", "ධාවන දක්ෂතාවය"],
+        "answer": 0,
+        "category": "රියදුරු වගකීම්",
+        "explanation": "රිය පැදවීමේදී පෙනීම සහ ශ්‍රවණය මූලිකම සාධක වන බැවින් ජාතික ප්‍රවාහන වෛද්‍ය ආයතනය මඟින් එය දැඩිව පරික්ෂා කරයි."
+    },
+    {
+        "id": 59,
+        "question": "මංසන්ධියකදී දකුණට හැරවීමට බලාපොරොත්තු වන විට ඔබ මුලින්ම යා යුත්තේ කුමන මංතීරුවටද (Lane)?",
+        "options": ["වම්පස කෙළවරේම ඇති මංතීරුවට", "දකුණුපස මධ්‍යයට ආසන්නම ඇති දකුණු මංතීරුවට", "පදික වේදිකාව අසලටම", "ඕනෑම මංතීරුවක් සුදුසුය"],
+        "answer": 1,
+        "category": "රථවාහන නීති",
+        "explanation": "දකුණට හැරවීමට නම් නියමිත වේලාවට දකුණු මංතීරුවට (Right-hand lane) ආරක්ෂිතව මාරු වී සිටිය යුතුය."
+    },
+    {
+        "id": 60,
+        "question": "වාහනයක ටයර් මතුපිට ඇති කට්ට (Tread Depth) ගෙවී යාමෙන් සිදුවන අනතුර කුමක්ද?",
+        "options": ["වාහනයේ පෙනුම ලස්සන වීම", "තිරිංග දැමූ විට වාහනය නතර නොවී ලිස්සා යාම (විශේෂයෙන් තෙත් පාරවල් වල)", "ටයරයේ හුළං පිරීම ලෙහෙසි වීම", "එන්ජිම රත් වීම"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "ටයර් කට්ට මඟින් පාරේ ඇති වතුර ඉවත් කර ග්‍රහණය පවත්වා ගනී. කට්ට ගෙවුණු විට වාහනය ඉතා පහසුවෙන් ලිස්සා යයි."
+    },
+    {
+        "id": 61,
+        "question": "ශ්‍රී ලංකාවේ මහා මාර්ගයක ධාවනය කිරීමේදී වම්පසින් ඉස්සර කිරීමට (Overtake) අවසර ඇත්තේ කුමන අවස්ථාවකදීද?",
+        "options": ["ඉදිරියෙන් යන වාහනය දකුණට හැරවීමට සංඥා කර මාර්ගයේ මැදට කර ඇති විට පමණක්", "ඉදිරි වාහනය සෙමින් යන්නේ නම් ඕනෑම වෙලාවක", "ට්‍රැෆික් වැඩි වෙලාවට", "කිසිදු අවස්ථාවක අවසර නැත"],
+        "answer": 0,
+        "category": "රථවාහන නීති",
+        "explanation": "සාමාන්‍යයෙන් වමෙන් ඉස්සර කිරීම තහනම් වුවද, ඉදිරි වාහනය පැහැදිලිවම දකුණට හැරවීමට සූදානම් වන විට වම්පසින් ඉස්සර කළ හැක."
+    },
+    {
+        "id": 62,
+        "question": "ඔබ ධාවනය කරන වාහනය අනතුරකට ලක්වුවහොත් නීත්‍යානුකූලව මුලින්ම කළ යුත්තේ කුමක්ද?",
+        "options": ["වාහනය එතැනම දමා පැන යාම", "වාහනය වහාම නවත්වා, අනෙක් අයට අනතුරු ඇඟවීම් කර, තුවාලකරුවන් සිටී නම් රෝහල් ගත කිරීමට පියවර ගැනීම", "පොලිසිය එනතුරු කිසිවෙකුට අත තැබීමට නොදීම", "අනෙක් රියදුරු සමඟ රණ්ඩුවීම"],
+        "answer": 1,
+        "category": "හදිසි අවස්ථා",
+        "explanation": "අනතුරකදී වාහනය නැවැත්වීම සහ මානුෂීය ලෙස ජීවිත බේරා ගැනීමට මුල් තැන දීම රියදුරෙකුගේ පරම වගකීමකි."
+    },
+    {
+        "id": 63,
+        "question": "පාරේ දාරයේ තැබූ 'රතු පැහැති පරාවර්තක' (Red Cat's Eyes) මඟින් රාත්‍රියට රියදුරුට පෙන්වන්නේ කුමක්ද?",
+        "options": ["මාර්ගයේ දකුණුපස සීමාව", "මාර්ගයේ වම්පස කෙළවර මායිම", "මැද තීරුව", "ඉදිරියේ ඇති පදික මාරුව"],
+        "answer": 1,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "රතු පැහැති කැට්ස් අයිස් (Cat's eyes) සැමවිටම යොදන්නේ පාරේ වම්පස මායිම (Left edge) පෙන්වීමටයි."
+    },
+    {
+        "id": 64,
+        "question": "මාර්ග සංඥා ලාම්පුවක තැඹිලි/කහ ආලෝකය (Steady Amber) ස්ථාවරව දැල්වෙන්නේ කුමන අදහසින්ද?",
+        "options": ["වේගයෙන් මංසන්ධිය පසුකර යන්න", "රතු ආලෝකය වැටීමට නියමිත බැවින් ආරක්ෂිතව වාහනය නැවැත්වීමට සූදානම් වන්න", "නොනවත්වා ඉදිරියටම යන්න", "කොළ ආලෝකය වැටෙනතුරු සිටින්න"],
+        "answer": 1,
+        "category": "මාර්ග සංඥා",
+        "explanation": "ස්ථාවර කහ ආලෝකයෙන් කියවෙන්නේ ඊළඟට රතු වැටෙන බැවින් නැවැත්වීමේ ඉර අසල ආරක්ෂිතව නතර වන ලෙසයි."
+    },
+    {
+        "id": 65,
+        "question": "වාහනයක 'ප්‍රධාන ලාම්පු' (Headlights) රාත්‍රී කාලයේදී නිවැරදිව භාවිත කළ යුත්තේ කෙසේද?",
+        "options": ["නගරය තුළදී දුර ආලෝකය (High Beam) යෙදීම", "වෙනත් වාහන හමුවන විට හෝ නගරය තුළ ධාවනයේදී ළඟ ආලෝකය (Low Beam/Dim) භාවිත කිරීම", "ලාම්පු නොදල්වා යාම", "ෆෝග් ලාම්පු පමණක් දැල්වීම"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "දුර ආලෝකය (High beam) මඟින් ඉදිරියෙන් එන රියදුරන්ගේ දෑස් නිලංකාර වන බැවින් වාහන හමුවන විට Dim (Low beam) කළ යුතුය."
+    },
+    {
+        "id": 66,
+        "question": "පාර අයිනේ ඇති බස් නැවතුම්පොළක (Bus Halt) වාහනයක් නවතා තැබීම (Park කිරීම) අවසර තිබේද?",
+        "options": ["ඔව්, විනාඩි 5 කට වඩා අඩු නම්", "නැත, බස් නැවතුමකට මීටර් 15 ක් ඇතුළත වාහන නැවැත්වීම තහනම්ය", "ඔව්, රියදුරු වාහනය තුළ සිටී නම්", "රාත්‍රී කාලයේදී පමණක් අවසර ඇත"],
+        "answer": 1,
+        "category": "රථවාහන නීති",
+        "explanation": "පොදු ප්‍රවාහන බස් රථවලට බාධා නොවන පරිදි බස් නැවතුමක සිට අවම මීටර් 15ක් ඇතුළත වෙනත් වාහන නැවැත්වීම නීති විරෝධී වේ."
+    },
+    {
+        "id": 67,
+        "question": "කඳුකර මාර්ගවල ඇති 'බෑවුම් සහිත දැඩි වංගු' (Hairpin Bends) වලදී රියදුරු කළ යුත්තේ කුමක්ද?",
+        "options": ["වේගය උපරිමයෙන් අඩු කර, පහළ ගියර් එකක් (Low Gear) භාවිත කරමින් වම්පසින් ධාවනය කිරීම", "වේගයෙන්ම වංගුව කැපීම", "උදාසීන (Neutral) ගියරයේ වාහනය ධාවනය කිරීම", "දකුණු පසින් ධාවනය කිරීම"],
+        "answer": 0,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "දැඩි වංගුවලදී වාහනයේ පාලනය සහ එන්ජින් බලය අවශ්‍ය නිසා පහළ ගියර් (1 හෝ 2) යොදාගෙන පරීක්ෂාකාරීව යා යුතුය."
+    },
+    {
+        "id": 68,
+        "question": "පාර මැද ඇඳ ඇති එක් පැත්තක් නොකැඩුණු සහ අනෙක් පැත්ත කඩ ඉරක් වන ද්විත්ව රේඛාවෙන් අඟවන්නේ කුමක්ද?",
+        "options": ["කඩ ඉර ඇති පැත්තේ වාහනවලට පමණක් ආරක්ෂිතව ඉස්සර කිරීමට අවසර ඇති බව", "නොකැඩුණු ඉර ඇති පැත්තේ අයට ඉස්සර කළ හැකි බව", "දිශාවන් දෙකටම ඉස්සර කිරීම තහනම් බව", "පාර දෙකට බෙදා ඇති බව පමණි"],
+        "answer": 0,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "මෙවැනි ස්ථානවලදී තමන්ට ආසන්නයෙන්ම ඇත්තේ කඩ ඉර නම් පමණක් ඉස්සර කිරීමට නීත්‍යානුකූල අවසරය ලැබේ."
+    },
+    {
+        "id": 69,
+        "question": "මාර්ගයක උපරිම වේග සීමාව දැක්වෙන පුවරුවක් අවසන් වන බව අඟවන පුවරුව කුමන ආකාර එකක්ද?",
+        "options": ["සුදු පසුබිමක කළු පැහැති ඇල ඉරක් සහිත රවුම් පුවරුවක්", "රතු පැහැති තරු ලකුණක්", "කොළ පැහැති පුවරුවක්", "කහ ත්‍රිකෝණයක්"],
+        "answer": 0,
+        "category": "මාර්ග සංඥා",
+        "explanation": "සුදු රවුමක කළු ඇල ඉරි (End of restriction) මඟින් කලින් පනවා තිබූ වේග සීමාව හෝ තහනම අවසන් වූ බව දක්වයි."
+    },
+    {
+        "id": 70,
+        "question": "ඔබේ වාහනයෙන් අධික ලෙස කළු දුමාරයක් පිටවන්නේ නම් එයින් පෙන්නුම් කරන්නේ කුමක්ද?",
+        "options": ["වාහනයේ තෙල් හොඳින් වැඩ කරන බව", "අසම්පූර්ණ දහනයක් සිදුවන බව සහ පරිසර දූෂණය ඉහළ යන බව (වාහනයේ දෝෂයක්)", "එන්ජිම ඉතා සිසිල් බව", "කිසිදු ගැටලුවක් නොමැති බව"],
+        "answer": 1,
+        "category": "රියදුරු වගකීම්",
+        "explanation": "කළු දුම පිටවීමෙන් කියවෙන්නේ ඉන්ධන අනවශ්‍ය ලෙස වැයවන බව සහ වාහනයේ එයාර් ෆිල්ටරයේ හෝ එන්ජිමේ දෝෂයක් ඇති බවයි."
+    },
+    {
+        "id": 71,
+        "question": "මහා මාර්ගයක ධාවනය වන විට 'නලා ශබ්දය' (Horn) භාවිත කළ යුත්තේ කුමන අවස්ථාවකදීද?",
+        "options": ["මිතුරන්ට ආචාර කිරීමට", "අනෙක් අයට තමන්ගේ පැමිණීම දන්වා අනතුරක් වළක්වා ගැනීමට පමණක් (Warning of presence)", "ට්‍රැෆික් එකේදී ඉදිරි වාහනවලට ඉක්මන් කරන ලෙස දැන්නීමට", "රාත්‍රී කාලයේදී නිතරම"],
+        "answer": 1,
+        "category": "රථවාහන නීති",
+        "explanation": "නලාව යනු අනතුරු ඇඟවීමේ මෙවලමකි. එය අනවශ්‍ය ලෙස හෝ තරහින් ශබ්ද කිරීම පරිසර දූෂණයක් මෙන්ම වරදකි."
+    },
+    {
+        "id": 72,
+        "question": "ට්‍රැෆික් පොලිස් නිලධාරියෙකු තම අත උඩු අතට කෙලින්ම ඔසවාගෙන සිටී නම් එයින් අදහස් කරන්නේ කුමක්ද?",
+        "options": ["සියලුම දිශාවලින් පැමිණෙන වාහන වහාම නැවැත්විය යුතුය", "පිටුපසින් එන වාහනවලට පමණක් නවතින්නැයි පැවසීම", "ඉදිරියට යාමට අවසර දීම", "වාහනවල වේගය වැඩි කිරීමට පැවසීම"],
+        "answer": 0,
+        "category": "මාර්ග සංඥා",
+        "explanation": "පොලිස් නිලධාරියා අත සිරස්ව කෙලින්ම එසවීම මඟින් මංසන්ධියට ඇතුළු වන සියලුම වාහන නතර විය යුතු බව නියෝග කරයි."
+    },
+    {
+        "id": 73,
+        "question": "මහා මාර්ගයක වම්පස කෙළවරේ ඇඳ ඇති ද්විත්ව කහ ඉරි (Double Yellow Lines) මඟින් දක්වන්නේ කුමක්ද?",
+        "options": ["වාහන නැවැත්වීම (Parking) සහ කෙටි වේලාවකට හෝ වාහනය නැවතීම (Standing) සපුරා තහනම් බව", "පැය 2 කට වඩා පාක් කිරීම තහනම් බව", "වාහන සේදීම තහනම් බව", "වේග සීමා කලාපයක්"],
+        "answer": 0,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "ද්විත්ව කහ ඉරි යනු ඉතා තදින්ම වාහන නැවැත්වීම සහ මගීන් නැංවීමටවත් වාහන නැවතීම තහනම් කළ ස්ථාන වේ."
+    },
+    {
+        "id": 74,
+        "question": "වංගුවක් සහිත මාර්ගයක ධාවනය කිරීමේදී centrifugal force (කේන්ද්‍රාපසාරී බලය) නිසා වාහනයට සිදුවන්නේ කුමක්ද?",
+        "options": ["වාහනය වංගුවෙන් පිටතට විසි වීමට උත්සාහ කිරීම", "වාහනයේ වේගය ඉබේම අඩු වීම", "ටයර් වල හුළං වැඩි වීම", "වාහනය ඉහළට එසවීම"],
+        "answer": 0,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "කේන්ද්‍රාපසාරී බලය නිසා වේගය වැඩි වුවහොත් වාහනය වංගුවෙන් පිටතට ලිස්සා යා හැක. එබැවින් වංගුවට පෙර වේගය අඩු කළ යුතුය."
+    },
+    {
+        "id": 75,
+        "question": "ශ්‍රී ලංකාවේ 'ආධුනික' (Learner) රියදුරෙකු වාහනයක් පදවන විට අනුගමනය කළ යුතු ප්‍රධාන නීතියක් කුමක්ද?",
+        "options": ["වාහනයේ ඉදිරිපස සහ පසුපස 'L' පුවරු පැහැදිලිව ප්‍රදර්ශනය කිරීම සහ වලංගු බලපත්‍රලාභී උපදේශකයෙකු අසල සිටීම", "තනියම ඕනෑම තැනක ධාවනය කිරීම", "රාත්‍රී කාලයේ පමණක් පැදවීම", "අධිවේගී මාර්ගයේ පමණක් පැදවීම"],
+        "answer": 0,
+        "category": "රියදුරු වගකීම්",
+        "explanation": "නීත්‍යානුකූලව ආධුනිකයෙකු පදවන විට රතු පැහැති 'L' පුවරු තිබීම සහ අසල බලපත්‍රලාභී රියදුරෙකු හෝ උපදේශකයෙකු සිටීම අනිවාර්ය වේ."
+    },
+    {
+        "id": 76,
+        "question": "මංසන්ධියක ඇති 'ප්‍රමුඛතා පුවරුවකින්' (Priority Sign) අඟවන්නේ කුමක්ද?",
+        "options": ["එම මාර්ගයේ යන වාහනවලට මංසන්ධියේදී ප්‍රමුඛ අයිතිය හිමිවන බව", "වාහන නැවැත්විය යුතු බව", "ඉදිරියෙන් පාර වසා ඇති බව", "වේගය අඩු කළ යුතු බව පමණි"],
+        "answer": 0,
+        "category": "මාර්ග සංඥා",
+        "explanation": "ප්‍රමුඛතා පුවරුව (රොම්බස් හැඩැති කහ/සුදු පුවරුව) මඟින් ඔබ ගමන් කරන්නේ ප්‍රධාන ප්‍රමුඛ පථයක බව තහවුරු කරයි."
+    },
+    {
+        "id": 77,
+        "question": "ඔබේ වාහනය පසුපසින් පැමිණෙන ලංගම හෝ පෞද්ගලික බස් රථයක් නැවතුමකින් පාරට දැමීමට සංඥා කරන විට ඔබ කළ යුත්තේ කුමක්ද?",
+        "options": ["ඉක්මනින් වේගය වැඩි කර බස් රථය පසුකර යාම", "වේගය බාල කර, බස් රථයට ආරක්ෂිතව මාර්ගයට ඇතුළු වීමට ඉඩ දීම (Give way to buses)", "දිගටම නලා ශබ්ද කිරීම", "බස් රථය ඉදිරිපිට වාහනය නැවැත්වීම"],
+        "answer": 1,
+        "category": "රථවාහන නීති",
+        "explanation": "මගී ප්‍රවාහන බස් රථ නැවතුමකින් නැවත මාර්ගයට ඇතුළු වීමට උත්සාහ කරන විට ඔවුන්ට ප්‍රමුඛතාවය දී ඉඩ දීම යහපත් රියදුරු සිරිතකි."
+    },
+    {
+        "id": 78,
+        "question": "පාර මැද ඇඳ ඇති 'කහ පැහැති කඩ ඉරිවලින්' දක්වන්නේ කුමක්ද?",
+        "options": ["නිතරම මංතීරු මාරු කළ හැකි බව", "ඉදිරියේදී අනතුරුදායක නොකැඩුණු කහ ඉරි හමුවන බවට අනතුරු ඇඟවීම", "පදිකයින්ට පමණක් අයිති පාරක් බව", "වාහන නැවැත්විය හැකි බව"],
+        "answer": 1,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "මැද ඇති කහ කඩ ඉරි මඟින් ඉදිරියේදී වංගුවක් හෝ අනතුරුදායක සීමාවක් එන බැවින් ඉස්සර නොකරන ලෙස කල්තියා පවසයි."
+    },
+    {
+        "id": 79,
+        "question": "දිගු වේලාවක් ක්ලච් එක (Clutch Pedal) අඩක් පාගාගෙන රිය පැදවීමෙන් (Clutch Riding) සිදුවන හානිය කුමක්ද?",
+        "options": ["වාහනයේ වේගය වැඩි වීම", "ක්ලච් ප්ලේට් එක (Clutch Plate) අනවශ්‍ය ලෙස ගෙවී විනාශ වීම", "ටයර් ගෙවී යාම", "තිරිංග අක්‍රිය වීම"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "ක්ලච් එක අනවශ්‍ය ලෙස පාගාගෙන සිටීමෙන් ක්ලච් පද්ධතිය අධික ලෙස රත් වී ක්ලච් ප්ලේට් පිච්චීමට ඉඩ ඇත."
+    },
+    {
+        "id": 80,
+        "question": "ඉදිරියෙන් පාර හරහා දුම්රිය ගේට්ටු වසා ඇති විට ඔබ වාහනය නතර කළ යුත්තේ කෙසේද?",
+        "options": ["ගේට්ටුවේ ගෑවෙන නොගෑවෙන සේ ළඟින්ම", "ගේට්ටුවේ සිට අවම වශයෙන් මීටර් කීපයක් පිටුපසින් ආරක්ෂිත සීමාවක ලයින් එකට පිටුපසින්", "පාරෙන් අයිනට කර තනියම ඉදිරියට යාම", "ඕනෑම තැනක බාධාවක් නැත"],
+        "answer": 1,
+        "category": "හදිසි අවස්ථා",
+        "explanation": "දුම්රිය පථයේ සිට ආරක්ෂිත දුරක් තබා නැවැත්වීමේ රේඛාවට පිටුපසින් වාහනය නතර කර තැබිය යුතුය."
+    },
+    {
+        "id": 81,
+        "question": "ත්‍රිකෝණාකාර පුවරුවක යටිකුරු කළ ඊතල දෙකක් (ප්‍රතිවිරුද්ධ දිශාවලට) ඇත්නම් එයින් අඟවන්නේ කුමක්ද?",
+        "options": ["ඉදිරියෙන් දෙපසටම වාහන ධාවනය වන ද්විත්ව මාර්ගයක් (Two-way traffic ahead) ආරම්භ වන බව", "එක්දෙසකට පමණක් ඇති පාරක්", "පාර වසා ඇති බව", "මංසන්ධියක් ඇති බව"],
+        "answer": 0,
+        "category": "මාර්ග සංඥා",
+        "explanation": "තනි මාර්ගයක සිට ඉදිරියේදී දෙපසටම වාහන මාරුවන ද්විත්ව මාර්ගයකට ඇතුළු වන බව පෙන්වන අනතුරු ඇඟවීමකි."
+    },
+    {
+        "id": 82,
+        "question": "වාහනයක් හැරවීමට සිග්නල් දැමූ පසුවත්, හැරී අවසන් වූ පසු සිග්නල් ලාම්පුව නිවී ඇත්දැයි බැලීම වැදගත් වන්නේ ඇයි?",
+        "options": ["බැටරිය ඉවර වන නිසා", "පිටුපස එන වාහන ඔබ තවමත් හැරවීමට යනවා යැයි රැවටීමට ලක්විය හැකි බැවින්", "පොලිසියෙන් දඩ ගසන නිසා", "ලාම්පුව පිච්චෙන නිසා"],
+        "answer": 1,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "සමහරවිට සුක්කානම (Steering) කැරකී එන විට සිග්නල් එක ඉබේ නිවෙන්නේ නැත. එය අන් අය මුලාවට පත් වීමට හේතු වේ."
+    },
+    {
+        "id": 83,
+        "question": "මාර්ගයේ ඇඳ ඇති 'පදික කුට්ටි සලකුණු' (Pedestrian refuge/island) මඟින් කරන්නේ කුමක්ද?",
+        "options": ["පාර මැද පදිකයින්ට ආරක්ෂිතව නැවතී සිටීමට ඉඩ සැලසීම", "වාහන හරවා ගැනීමට ඉඩ දීම", "වේග සීමා පුවරු සවි කිරීම", "රථ ගාලක් හැදීම"],
+        "answer": 0,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "පළල් මාර්ග මැද ඇති පදික දූපත් (Islands) මඟින් පදිකයින්ට පාරෙන් අඩක් මාරු වී ආරක්ෂිතව ඉතිරි අඩ මාරු වීමට උදවු වේ."
+    },
+    {
+        "id": 84,
+        "question": "පිටුපසින් එන පොලිස් වාහනයක් නිල් පැහැති ආලෝක සංඥා සහ සෙරීනා නාදය නිකුත් කරන්නේ නම් ඔබ කළ යුත්තේ කුමක්ද?",
+        "options": ["වාහනය වම්පසට කර වහාම වේගය අඩු කර නතර කිරීම හෝ ඉඩ දීම", "පොලිසියට වඩා වේගයෙන් යාම", "මාර්ගය මැද වාහනය නවත්වා බැස යාම", "කිසිවක් නොකර සිටීම"],
+        "answer": 0,
+        "category": "හදිසි අවස්ථා",
+        "explanation": "නීතිය ක්‍රියාත්මක කරන සහ හදිසි සේවා වාහනවලට සැමවිටම මාර්ගයේ ප්‍රමුඛතාවය ලබා දිය යුතුය."
+    },
+    {
+        "id": 85,
+        "question": "රිය පැදවීමේදී 'Defensive Driving' (ආරක්ෂිත/පිබිදුණු රියදැක්ම) යන්නෙන් අදහස් කරන්නේ කුමක්ද?",
+        "options": ["අන් අයගේ වැරදි සහ මාර්ගයේ ඇති විය හැකි අනතුරු කල්තියා උපකල්පනය කර ආරක්ෂිතව රිය පැදවීම", "ඉතා වේගයෙන් ධාවනය කිරීම", "සැමවිටම තිරිංග තද කරගෙන සිටීම", "පොලිසියට බියෙන් පැදවීම"],
+        "answer": 0,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "ආරක්ෂිත රියදැක්ම යනු තමන් නිවැරදි වුවද, අන් අය අතින් සිදුවන වැරදි වටහාගෙන අනතුරු වළක්වා ගැනීමේ කලාවයි."
+    },
+    {
+        "id": 86,
+        "question": "පාර අයිනේ ඇති සෘජුකෝණාස්‍රාකාර කොළ පැහැති පුවරුවලින් පොදුවේ දක්වන්නේ කුමක්ද?",
+        "options": ["අධිවේගී මාර්ග පිළිබඳ තොරතුරු සහ දිශාවන් (Direction signs for expressways)", "අනතුරු ඇඟවීම්", "තහනම් නියෝග", "නැවැත්වීමේ සීමාවන්"],
+        "answer": 0,
+        "category": "මාර්ග සංඥා",
+        "explanation": "ශ්‍රී ලංකාවේ අධිවේගී මාර්ගවල මඟපෙන්වීම් සහ දිශා පුවරු සඳහා කොළ පැහැති පසුබිම භාවිත කරනු ලබයි."
+    },
+    {
+        "id": 87,
+        "question": "මාර්ගයේ ඇඳ ඇති හරස් සුදු කඩ ඉරි පෙළකින් (Transverse Broken Lines) අඟවන්නේ කුමක්ද?",
+        "options": ["ඉදිරියෙන් ඇති ප්‍රධාන මාර්ගයේ වාහනවලට ඉඩ දිය යුතු සීමාව (Give Way Line)", "වාහනය සම්පූර්ණයෙන්ම නැවැත්විය යුතු සීමාව", "ඉස්සර කළ හැකි සීමාව", "වේගය වැඩි කළ හැකි ස්ථානය"],
+        "answer": 0,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "මෙම ඉරි මඟින් පෙන්වන්නේ ප්‍රධාන පාරට ඇතුළු වීමට පෙර අවශ්‍ය නම් වාහනය නවත්වා ඉඩ දිය යුතු සීමාවයි."
+    },
+    {
+        "id": 88,
+        "question": "රියදුරෙකුට තමන් ඉදිරියෙන් ඇති දර්ශනය පැහැදිලි නැති අවස්ථාවක (උදා: කන්දක් මුදුනකදී) ඉස්සර කිරීම අවසර තිබේද?",
+        "options": ["නැත, ඉදිරි මාර්ගය පැහැදිලිව නොපෙනේ නම් ඉස්සර කිරීම සපුරා තහනම්ය", "ඔව්, නලා ශබ්දය නාද කරන්නේ නම්", "ඔව්, වාහනය බලවත් නම්", "දිවා කාලයේදී පමණක් අවසර ඇත"],
+        "answer": 0,
+        "category": "රථවාහන නීති",
+        "explanation": "ඉදිරියෙන් එන වාහන නොපෙනෙන කඳු මුදුන්, දරුණු වංගු වැනි ස්ථානවලදී ඉස්සර කිරීම මාරාන්තික අනතුරුවලට හේතු වේ."
+    },
+    {
+        "id": 89,
+        "question": "රිය පැදවීමේදී තෙහෙට්ටුව (Fatigue) මඟහරවා ගැනීමට දිගු ගමන් වලදී නිර්දේශ කරන්නේ කුමක්ද?",
+        "options": ["සෑම පැය 2 කට හෝ කිලෝමීටර් 200 කට වරක් විනාඩි 15 ක කෙටි විවේකයක් ගැනීම", "නොනවත්වා පැය 5 ක් පැදවීම", "වැඩිපුර සිගරට් බීම", "වාහනයේ ජනේල සියල්ල වසාගෙන යාම"],
+        "answer": 0,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "දිගු වේලාවක් එක දිගට රිය පැදවීමේදී ඒකාකාරී බව නිසා අවධානය අඩු වේ. එබැවින් වරින් වර විවේක ගැනීම අත්‍යවශ්‍ය වේ."
+    },
+    {
+        "id": 90,
+        "question": "රවුම් හැඩැති පුවරුවක රතු මායිමක් සහ මැද සුදු පසුබිමක කිසිවක් ඇඳ නොමැති නම් එයින් අඟවන්නේ කුමක්ද?",
+        "options": ["සියලුම වාහන ඇතුළුවීම තහනම් (No Entry for all vehicles)", "සියලුම වාහනවලට යා හැක", "වේග සීමාව අවසන්", "රථ ගාලක් ඇත"],
+        "answer": 0,
+        "category": "මාර්ග සංඥා",
+        "explanation": "හිස් සුදු පසුබිමක් සහිත රතු රවුම් පුවරුවකින් එම මාර්ගයට කිසිදු වාහනයකට ඇතුළු විය නොහැකි බව (පාර වසා ඇති බව) පවසයි."
+    },
+    {
+        "id": 91,
+        "question": "මහා මාර්ගයක ධාවනය වන විට එන්ජින් පියනෙන් (Bonnet) දුමක් හෝ වාෂ්පයක් පිටවනු දුටුවහොත් මුලින්ම කළ යුත්තේ කුමක්ද?",
+        "options": ["වාහනය ආරක්ෂිතව පාරෙන් අයිනට කර නවත්වා, එන්ජිම නිවා දමා, සිසිල් වනතුරු සිටීම", "දිගටම වේගයෙන් ධාවනය කිරීම", "වහාම රේඩියේටර් පියන ගැලවීම", "වාහනයට වතුර ගැසීම"],
+        "answer": 0,
+        "category": "හදිසි අවස්ථා",
+        "explanation": "Bonnet එකෙන් දුම් දැමීම යනු එන්ජිම ඕවර්හීට් (Overheat) වීමකි. වහාම ආරක්ෂිතව නවත්වා නිවා දැමිය යුතුය. රත් වී තිබියදී රේඩියේටර් පියන ගැලවීම අනතුරුදායකය."
+    },
+    {
+        "id": 92,
+        "question": "ඔබේ වාහනයේ පසුපස බ්‍රේක් ලයිට් (Brake Lights) ක්‍රියා නොකරයි නම් සිදුවිය හැකි අනතුර කුමක්ද?",
+        "options": ["පිටුපසින් එන වාහන ඔබ නතර කරන බව නොදැන ඔබගේ වාහනයේ පිටුපස හැප්පීමට ඉඩ ඇත", "ඉන්ධන වැඩිපුර වැය වීම", "ටයර් පිපිරීම", "කිසිදු අනතුරක් නැත"],
+        "answer": 0,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "බ්‍රේක් ලයිට් මඟින් පසුපස වාහනවලට ඔබ වේගය අඩු කරන බව පවසයි. ඒවා ක්‍රියා නොකිරීම පසුපසින් සිදුවන අනතුරු (Rear-end collisions) වලට ප්‍රධාන හේතුවකි."
+    },
+    {
+        "id": 93,
+        "question": "පාර මැද ඇඳ ඇති 'කහ පැහැති ඩයමන්ඩ් සලකුණක්' (Yellow Diamond) මඟින් අඟවන්නේ කුමක්ද?",
+        "options": ["ඉදිරියේදී පදික මාරුවක් ඇති බැවින් වේගය අඩු කළ යුතු බව", "භයානක හන්දියක්", "VIP වාහන සඳහා පමණක් වෙන්වූ තීරුවක්", "රථ ගාලක්"],
+        "answer": 0,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "පදික මාරුවකට මීටර් කිහිපයකට පෙර පාර මැද අඳින කහ ඩයමන්ඩ් (දියමන්ති) සලකුණෙන් පදික මාරුවක් ළඟ බව රියදුරුට මතක් කර දෙයි."
+    },
+    {
+        "id": 94,
+        "question": "කවුරුන් හෝ මහා මාර්ගයක අනතුරක් සිදුකර නොනවත්වා පලා ගියහොත් (Hit and Run) එයට ලැබිය හැකි දඬුවම කුමක්ද?",
+        "options": ["උසාවිය මඟින් රියදුරු බලපත්‍රය අහෝසි කිරීම, විශාල දඩ සහ සිරදඬුවම් ලැබීම", "සුළු අවවාදයක් පමණි", "කිසිදු දඬුවමක් නැත", "පොලිසියෙන් දඩ කොළයක් පමණක් ලැබීම"],
+        "answer": 0,
+        "category": "රියදුරු වගකීම්",
+        "explanation": "අනතුරක් කර පලා යාම ශ්‍රී ලංකාවේ නීතියට අනුව ඉතා බරපතල සාපරාධී වරදක් වන අතර එයට දැඩි දඬුවම් හිමිවේ."
+    },
+    {
+        "id": 95,
+        "question": "මාර්ගයක රවුම් හැඩැති පුවරුවක ඊතල දෙකක් එකිනෙකට ප්‍රතිවිරුද්ධව තිබී, එයින් රතු පැහැති ඊතලයෙන් දක්වන්නේ කුමක්ද?",
+        "options": ["රතු ඊතලය ඇති දිශාවේ වාහනවලට ප්‍රමුඛතාවය අහිමි බව (Give way to oncoming traffic)", "රතු ඊතලයට ප්‍රමුඛතාවය ඇති බව", "පාර වසා ඇති බව", "ඉස්සර කිරීම තහනම් බව"],
+        "answer": 0,
+        "category": "මාර්ග සංඥා",
+        "explanation": "රතු පැහැති ඊතලයෙන් හැඟවෙන්නේ ඉදිරියෙන් එන වාහනවලට මුලින්ම යාමට ඉඩ දී ඔබ නැවතී සිටිය යුතු බවයි."
+    },
+    {
+        "id": 96,
+        "question": "වාහනයක් පදවන අතරතුර සුක්කානම (Steering Wheel) එකවරම ඉතා බර හෝ තද බවක් දැනුනහොත් වරද කුමක් විය හැකිද?",
+        "options": ["පවර් ස්ටියරින් (Power Steering) පද්ධතියේ දෝෂයක් හෝ ඔයිල් කාන්දුවක්", "ටයර් වල හුළං වැඩි වීම", "වාහනයේ තෙල් ඉවර වීම", "තිරිංග තද වීම"],
+        "answer": 0,
+        "category": "හදිසි අවස්ථා",
+        "explanation": "ස්ටියරින් එක එකවරම තද වන්නේ පවර් ස්ටියරින් පද්ධතිය අක්‍රිය වූ විටයි. එවිට වාහනය හැරවීම අපහසු වන බැවින් සෙමින් නතර කළ යුතුය."
+    },
+    {
+        "id": 97,
+        "question": "මහා මාර්ගයක වම්පස කෙළවරේ ඇඳ ඇති කඩ ඉරි සහිත සුදු රේඛාවලින් (Parking Bays) දක්වන්නේ කුමක්ද?",
+        "options": ["වාහන ආරක්ෂිතව නතර කර තැබීමට අනුමත ස්ථාන (Authorized Parking Spaces)", "වාහන ධාවනය කළ යුතු මංතීරු", "පදික මාරු සීමාවන්", "බස් රථ සඳහා පමණක් ඇති තීරුවක්"],
+        "answer": 0,
+        "category": "මාර්ග සලකුණු",
+        "explanation": "කොටු ආකාරයට පාර අයිනේ ඇඳ ඇති සුදු ඉරි මඟින් වාහන ගාල් කිරීමට (Park කිරීමට) නීත්‍යානුකූලව වෙන් කර ඇති සීමාවන් දක්වයි."
+    },
+    {
+        "id": 98,
+        "question": "ප්‍රතිවිරුද්ධ දෙසින් එන වාහනයක් තමන්ගේ තීරුවට (Lane) එකවරම ඇතුළු වුවහොත් ඔබ කළ යුත්තේ කුමක්ද?",
+        "options": ["ඔහුගේ වාහනය දෙසටම ධාවනය කිරීම", "වේගය අඩු කර, වම්පස ඇති ආරක්ෂිත ඉඩකට වාහනය වහාම පාලනය කිරීම සහ නලා ශබ්ද කිරීම", "වේගය තවත් වැඩි කිරීම", "ඇස් වසාගෙන බ්‍රේක් දැමීම"],
+        "answer": 1,
+        "category": "හදිසි අවස්ථා",
+        "explanation": "මුහුණට මුහුණ ලා සිදුවන අනතුරක් වැළැක්වීමට තමන්ගේ වේගය අඩු කර පාරේ වම්පස ඇති ආරක්ෂිතම සීමාවට වාහනය පලවා හැරිය යුතුය."
+    },
+    {
+        "id": 99,
+        "question": "ත්‍රිකෝණාකාර පුවරුවක කළු පැහැති ගේට්ටුවක (Fence) සලකුණක් ඇත්නම් එයින් අඟවන්නේ කුමක්ද?",
+        "options": ["ඉදිරියෙන් ආරක්ෂිත (ගේට්ටු සහිත) දුම්රිය හරස් මාර්ගයක් ඇති බව (Guarded Railway Crossing)", "ඉදිරියෙන් ගොවිපලක් ඇති බව", "පාර අවසන් වන බව", "ආරක්ෂිත නොවන දුම්රිය පථයක්"],
+        "answer": 0,
+        "category": "මාර්ග සංඥා",
+        "explanation": "ගේට්ටුවක සලකුණෙන් කියවෙන්නේ ඉදිරියේ ඇති දුම්රිය හරස් මාර්ගය ගේට්ටු හෝ බාධක යොදා ආරක්ෂා කර ඇති බවයි."
+    },
+    {
+        "id": 100,
+        "question": "වාහනයක් ධාවනය ආරම්භ කිරීමට ප්‍රථම රියදුරු අසුන සහ කැඩපත් (Mirrors) සකස් කරගත යුත්තේ ඇයි?",
+        "options": ["පසුව සකස් කිරීම අපහසු නිසා සහ ධාවනයේදී උපරිම අවට දෘශ්‍යතාව සහ පාලනය ලබා ගැනීමට", "වාහනයේ පෙනුම ලස්සන වීමට", "නීතියෙන් දඩ ගැසීම වැළැක්වීමට පමණක්", "එය වැදගත් නොවේ"],
+        "answer": 0,
+        "category": "සුරක්ෂිත රියදැක්ම",
+        "explanation": "වාහනය පදවන අතරතුර කැඩපත් සකස් කිරීමට යාම අවධානය බිඳී අනතුරු සිදුවීමට හේතු වේ. එබැවින් ගමනට පෙර එය කළ යුතුය."
+    }
+];
+
+        // ප්‍රශ්න 200ක අවශ්‍යතාවය සපුරාලීමට ඩයිනමික් ලෙස තවත් ප්‍රශ්න උත්පාදනය කර එකතු කිරීම (Loop එකක් මඟින්)
+        const categories = ["මාර්ග සංඥා", "රථවාහන නීති", "මාර්ග සලකුණු", "වේග සීමාවන්", "රියදුරු වගකීම්", "සුරක්ෂිත රියදැක්ම", "හදිසි අවස්ථා"];
+        
+        const roadSignsData = [
+            { "name": "නැවතීමේ සංඥාව (STOP)", "desc": "හන්දියකදී වාහනය සම්පූර්ණයෙන්ම නවත්වා, ප්‍රධාන මාර්ගයේ වාහනවලට ඉඩ දී අනතුරුව ඉදිරියට යන්න.", "type": "නියෝගාත්මක", "icon": "🛑" },
+            { "name": "ඉස්සර කිරීම තහනම්", "desc": "ඉදිරියෙන් යන කිසිදු වාහනයක් පසුකර යාම සපුරා තහනම් වේ.", "type": "තහනම්", "icon": "🚫" },
+            { "name": "පදික මාරුව", "desc": "ඉදිරියෙන් පදිකයින් මාරුවන ස්ථානයක් ඇති බැවින් වේගය අඩු කර සූදානමින් සිටින්න.", "type": "අනතුරු ඇඟවීමේ", "icon": "🚶" },
+            { "name": "වේග සීමාව කි.මී. 50", "desc": "මෙම කලාපය තුළ උපරිම ධාවන වේගය පැයට කිලෝමීටර් 50 නොයික්මවිය යුතුය.", "type": "නියෝගාත්මක", "icon": "➄⓪" }
+        ];
+
+        // -------------------------------------------------------------------------
+        // 2. STATE MANAGEMENT (යෙදුමේ තත්ත්ව පාලනය)
+        // -------------------------------------------------------------------------
+        let currentQuizQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = {}; // { questionIndex: selectedOptionIndex }
+        let reviewMarks = {}; // { questionIndex: true/false }
+        let isPracticeMode = false;
+        let examTimerInterval = null;
+        let timeLeft = 45 * 60; // තත්පර වලින් (විනාඩි 45)
+        let isSoundEnabled = true;
+
+        // -------------------------------------------------------------------------
+        // 3. APP INITIALIZATION & CORE FUNCTIONS
+        // -------------------------------------------------------------------------
+        document.addEventListener("DOMContentLoaded", () => {
+            initTheme();
+            updateDashboardStats();
+            renderLeaderboard();
+            renderRoadSigns();
+            setupKeyboardNavigation();
+        });
+
+        function showView(viewId) {
+            ['dashboard-view', 'quiz-view', 'results-view', 'signs-view'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(`${viewId}-view`).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('theme-icon').className = isDark ? "fa-solid fa-sun text-lg text-amber-400" : "fa-solid fa-moon text-lg text-gray-600";
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon').className = "fa-solid fa-sun text-lg text-amber-400";
+            }
+        }
+
+        function toggleSound() {
+            isSoundEnabled = !isSoundEnabled;
+            document.getElementById('sound-icon').className = isSoundEnabled ? "fa-solid fa-volume-high text-lg text-gray-600 dark:text-gray-300" : "fa-solid fa-volume-xmark text-lg text-red-500";
+        }
+
+        function playSound(type) {
+            if (!isSoundEnabled) return;
+            const snd = document.getElementById(`snd-${type}`);
+            if (snd) { snd.currentTime = 0; snd.play().catch(()=>{}); }
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // -------------------------------------------------------------------------
+        // 4. QUIZ ENGINE (EXAM & PRACTICE MODES)
+        // -------------------------------------------------------------------------
+        function startExam(isDailyChallenge = false) {
+            isPracticeMode = false;
+            userAnswers = {};
+            reviewMarks = {};
+            currentQuestionIndex = 0;
+            
+            document.getElementById('quiz-mode-title').innerText = isDailyChallenge ? "දෛනික අභියෝගය 🌟" : "විභාග මාදිලිය ⏱️";
+            document.getElementById('exam-timer-container').classList.remove('hidden');
+            document.getElementById('explanation-container').classList.add('hidden');
+
+            // ප්‍රශ්න 40ක් සසම්භාවීව (Random) තෝරා ගැනීම
+            let pool = [...questionsData];
+            shuffleArray(pool);
+            currentQuizQuestions = pool.slice(0, 40);
+
+            // ටයිමරය සැකසීම
+            timeLeft = 45 * 60;
+            updateTimerDisplay();
+            clearInterval(examTimerInterval);
+            examTimerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(examTimerInterval);
+                    submitQuiz();
+                }
+            }, 1000);
+
+            showView('quiz');
+            renderQuestion();
+        }
+
+        function startPractice() {
+            isPracticeMode = true;
+            userAnswers = {};
+            reviewMarks = {};
+            currentQuestionIndex = 0;
+
+            document.getElementById('quiz-mode-title').innerText = "නිදහස් පුහුණුව 📖";
+            document.getElementById('exam-timer-container').classList.add('hidden');
+            
+            // මුළු ප්‍රශ්න 200ම පුහුණුව සඳහා ශෆල් කර ලබා දීම
+            currentQuizQuestions = [...questionsData];
+            shuffleArray(currentQuizQuestions);
+
+            clearInterval(examTimerInterval);
+            showView('quiz');
+            renderQuestion();
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const secs = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('exam-timer').innerText = `${mins}:${secs}`;
+        }
+
+        function renderQuestion() {
+            const q = currentQuizQuestions[currentQuestionIndex];
+            document.getElementById('question-category').innerText = q.category;
+            document.getElementById('question-number').innerText = `${currentQuestionIndex + 1} / ${currentQuizQuestions.length}`;
+            document.getElementById('question-text').innerText = q.question;
+            
+            // Progress Bar Update
+            const progress = ((currentQuestionIndex + 1) / currentQuizQuestions.length) * 100;
+            document.getElementById('quiz-progress').style.width = `${progress}%`;
+
+            // Review UI Update
+            updateReviewButtonUI();
+
+            // Options Build
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl border-2 transition-all duration-200 font-medium flex items-center justify-between text-sm sm:text-base ";
+                btn.innerText = `${idx + 1}. ${opt}`;
+
+                if (isPracticeMode) {
+                    // පුහුණු මාදිලියේදී දැනටමත් ක්ලික් කර ඇත්නම් ප්‍රතිඵල පෙන්වීම
+                    if (userAnswers[currentQuestionIndex] !== undefined) {
+                        btn.disabled = true;
+                        if (idx === q.answer) {
+                            btn.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-700', 'dark:bg-emerald-950/40');
+                            btn.innerHTML += ' <i class="fa-solid fa-circle-check text-emerald-500"></i>';
+                        } else if (idx === userAnswers[currentQuestionIndex]) {
+                            btn.classList.add('bg-red-50', 'border-red-500', 'text-red-700', 'dark:bg-red-950/40');
+                            btn.innerHTML += ' <i class="fa-solid fa-circle-xmark text-red-500"></i>';
+                        } else {
+                            btn.classList.add('border-gray-200', 'dark:border-gray-700', 'opacity-60');
+                        }
+                    } else {
+                        btn.classList.add('border-gray-200', 'dark:border-gray-700', 'hover:border-blue-500', 'hover:bg-blue-50/30', 'card-bg');
+                        btn.onclick = () => selectOption(idx);
+                    }
+                } else {
+                    // විභාග මාදිලිය
+                    if (userAnswers[currentQuestionIndex] === idx) {
+                        btn.classList.add('border-blue-600', 'bg-blue-50', 'dark:bg-blue-900/30', 'text-blue-600', 'dark:text-blue-400');
+                    } else {
+                        btn.classList.add('border-gray-200', 'dark:border-gray-700', 'hover:border-gray-400', 'card-bg');
+                    }
+                    btn.onclick = () => selectOption(idx);
+                }
+                optionsContainer.appendChild(btn);
+            });
+
+            // Explanation Section for Practice Mode
+            const expContainer = document.getElementById('explanation-container');
+            if (isPracticeMode && userAnswers[currentQuestionIndex] !== undefined) {
+                document.getElementById('explanation-text').innerText = q.explanation;
+                expContainer.classList.remove('hidden');
+            } else {
+                expContainer.classList.add('hidden');
+            }
+
+            // Prev button disabled state
+            document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
+            
+            // Next/Submit Button UI
+            const btnNext = document.getElementById('btn-next');
+            if (currentQuestionIndex === currentQuizQuestions.length - 1) {
+                btnNext.innerHTML = isPracticeMode ? 'අවසන් කරන්න <i class="fa-solid fa-flag-checkered ml-1"></i>' : 'සියල්ල ඉදිරිපත් කරන්න <i class="fa-solid fa-paper-plane ml-1"></i>';
+                btnNext.className = "px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold text-sm transition shadow-sm";
+            } else {
+                btnNext.innerHTML = 'මීළඟ <i class="fa-solid fa-arrow-right ml-1"></i>';
+                btnNext.className = "px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition shadow-sm";
+            }
+        }
+
+        function selectOption(optIndex) {
+            if (isPracticeMode && userAnswers[currentQuestionIndex] !== undefined) return;
+
+            userAnswers[currentQuestionIndex] = optIndex;
+            
+            if (isPracticeMode) {
+                const isCorrect = optIndex === currentQuizQuestions[currentQuestionIndex].answer;
+                playSound(isCorrect ? 'correct' : 'wrong');
+            }
+            
+            renderQuestion();
+        }
+
+        function toggleReviewMark() {
+            reviewMarks[currentQuestionIndex] = !reviewMarks[currentQuestionIndex];
+            updateReviewButtonUI();
+        }
+
+        function updateReviewButtonUI() {
+            const isMarked = reviewMarks[currentQuestionIndex];
+            const icon = document.getElementById('review-icon');
+            const text = document.getElementById('review-text');
+            if (isMarked) {
+                icon.className = "fa-solid fa-bookmark text-amber-500";
+                text.innerText = "සලකුණු කර ඇත";
+                text.className = "text-amber-500 font-semibold";
+            } else {
+                icon.className = "fa-regular fa-bookmark";
+                text.innerText = "පසුවට සලකුණු කරන්න";
+                text.className = "text-gray-500";
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < currentQuizQuestions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                submitQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        // Keyboard Navigation (පරිශීලක පහසුව සඳහා)
+        function setupKeyboardNavigation() {
+            document.addEventListener('keydown', (e) => {
+                if (document.getElementById('quiz-view').classList.contains('hidden')) return;
+                if (e.key === 'ArrowLeft') prevQuestion();
+                if (e.key === 'ArrowRight') nextQuestion();
+                if (['1','2','3','4'].includes(e.key)) selectOption(parseInt(e.key) - 1);
+            });
+        }
+
+        // -------------------------------------------------------------------------
+        // 5. RESULTS & STATISTICS
+        // -------------------------------------------------------------------------
+        function submitQuiz() {
+            clearInterval(examTimerInterval);
+            
+            let correctCount = 0;
+            let wrongCount = 0;
+            let categoryStats = {}; // Tracks wrong counts by category
+
+            currentQuizQuestions.forEach((q, idx) => {
+                const uAns = userAnswers[idx];
+                if (uAns === q.answer) {
+                    correctCount++;
+                } else {
+                    wrongCount++;
+                    categoryStats[q.category] = (categoryStats[q.category] || 0) + 1;
+                }
+            });
+
+            const totalScorePct = Math.round((correctCount / currentQuizQuestions.length) * 100);
+            const isPassed = totalScorePct >= 70; // 70% සාස්කෘත සමත් සීමාව
+
+            // Save Stats if Exam Mode
+            if (!isPracticeMode) {
+                saveExamStats(totalScorePct, categoryStats);
+            }
+
+            // Render Results View
+            document.getElementById('res-score').innerText = `${totalScorePct}%`;
+            document.getElementById('res-correct').innerText = correctCount;
+            document.getElementById('res-wrong').innerText = wrongCount;
+
+            const statusTitle = document.getElementById('result-status-title');
+            const statusIcon = document.getElementById('result-status-icon');
+            const motivationText = document.getElementById('result-motivation');
+
+            if (isPassed) {
+                statusTitle.innerText = "සුභ පැතුම්! ඔබ විභාගයෙන් සමත්.";
+                statusTitle.className = "text-3xl font-extrabold text-emerald-600 dark:text-emerald-400";
+                statusIcon.className = "w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400";
+                motivationText.innerText = "ඔබ සැබෑ විභාගයට ඉතා හොඳින් සූදානම්. මෙම උත්සාහය දිගටම පවත්වා ගන්න! 🎉";
+                // Confetti Explosion
+                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+            } else {
+                statusTitle.innerText = "කණගාටුයි! ඔබට සමත් විය නොහැකි වුණා.";
+                statusTitle.className = "text-3xl font-extrabold text-red-500";
+                statusIcon.className = "w-20 h-20 mx-auto rounded-full flex items-center justify-center text-4xl bg-red-100 text-red-500 dark:bg-red-950 dark:text-red-400";
+                motivationText.innerText = "ප්‍රතිඵලය ගැන අධෛර්යමත් වෙන්න එපා. වැරදුනු ස්ථාන සමාලෝචනය කර නැවත උත්සාහ කරන්න. ඔබට පුළුවන්! 💪";
+            }
+
+            renderDetailedReview();
+            showView('results');
+        }
+
+        function saveExamStats(score, categoryStats) {
+            let stats = JSON.parse(localStorage.getItem('driver_stats')) || { totalExams: 0, totalScore: 0, bestScore: 0, weakCategories: {} };
+            
+            stats.totalExams += 1;
+            stats.totalScore += score;
+            if (score > stats.bestScore) stats.bestScore = score;
+
+            // Merge weak categories
+            for (let cat in categoryStats) {
+                stats.weakCategories[cat] = (stats.weakCategories[cat] || 0) + categoryStats[cat];
+            }
+
+            localStorage.setItem('driver_stats', JSON.stringify(stats));
+            
+            // Save to Local Leaderboard
+            let leaderboard = JSON.parse(localStorage.getItem('driver_leaderboard')) || [];
+            leaderboard.push({ date: new Date().toLocaleDateString('si-LK'), score: score });
+            leaderboard.sort((a,b) => b.score - a.score);
+            localStorage.setItem('driver_leaderboard', JSON.stringify(leaderboard.slice(0, 5)));
+
+            updateDashboardStats();
+            renderLeaderboard();
+        }
+
+        function updateDashboardStats() {
+            const stats = JSON.parse(localStorage.getItem('driver_stats')) || { totalExams: 0, totalScore: 0, bestScore: 0, weakCategories: {} };
+            
+            document.getElementById('stat-exams').innerText = stats.totalExams;
+            document.getElementById('stat-best').innerText = `${stats.bestScore}%`;
+            
+            const avg = stats.totalExams > 0 ? Math.round(stats.totalScore / stats.totalExams) : 0;
+            document.getElementById('stat-avg').innerText = `${avg}%`;
+
+            // Find weakest category
+            let weakCat = "-";
+            let maxWrong = 0;
+            for (let cat in stats.weakCategories) {
+                if (stats.weakCategories[cat] > maxWrong) {
+                    maxWrong = stats.weakCategories[cat];
+                    weakCat = cat;
+                }
+            }
+            document.getElementById('stat-weak').innerText = weakCat;
+        }
+
+        function renderLeaderboard() {
+            const list = JSON.parse(localStorage.getItem('driver_leaderboard')) || [];
+            const container = document.getElementById('leaderboard-list');
+            if (list.length === 0) {
+                container.innerHTML = '<p class="text-xs text-muted-custom italic">තවමත් වාර්තා නොමැත. විභාගයකට පෙනී සිටින්න.</p>';
+                return;
+            }
+            container.innerHTML = list.map((item, idx) => `
+                <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-800 p-2 rounded-lg">
+                    <span>🥇 ස්ථානය #${idx+1} (${item.date})</span>
+                    <span class="font-bold text-blue-600 dark:text-blue-400">${item.score}%</span>
+                </div>
+            `).join('');
+        }
+
+        function renderDetailedReview() {
+            const container = document.getElementById('review-list');
+            container.innerHTML = '';
+
+            currentQuizQuestions.forEach((q, idx) => {
+                const uAns = userAnswers[idx];
+                const isCorrect = uAns === q.answer;
+                
+                const card = document.createElement('div');
+                card.className = `p-5 rounded-xl border ${isCorrect ? 'border-emerald-200 bg-emerald-50/20 dark:border-emerald-900/40' : 'border-red-200 bg-red-50/20 dark:border-red-900/40'} card-bg space-y-2`;
+                
+                card.innerHTML = `
+                    <div class="flex justify-between text-xs font-bold text-muted-custom">
+                        <span>ප්‍රශ්නය ${idx + 1} (${q.category})</span>
+                        <span class="${isCorrect ? 'text-emerald-600' : 'text-red-500'}">${isCorrect ? '✓ නිවැරදියි' : '✗ වැරදියි'}</span>
+                    </div>
+                    <h4 class="font-bold text-custom">${q.question}</h4>
+                    <p class="text-sm text-muted-custom">ඔබේ පිළිතුර: <span class="font-semibold">${uAns !== undefined ? q.options[uAns] : 'පිළිතුරු සපයා නැත'}</span></p>
+                    <p class="text-sm text-emerald-600 dark:text-emerald-400 font-semibold">නිවැරදි පිළිතුර: ${q.options[q.answer]}</p>
+                    <div class="text-xs mt-2 bg-gray-100 dark:bg-gray-800 p-2.5 rounded-lg text-gray-600 dark:text-gray-400">
+                        <strong>විස්තරය:</strong> ${q.explanation}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function scrollToReview() {
+            document.getElementById('detailed-review-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // -------------------------------------------------------------------------
+        // 6. ROAD SIGNS MANAGEMENT
+        // -------------------------------------------------------------------------
+        function renderRoadSigns() {
+            const grid = document.getElementById('signs-grid');
+            grid.innerHTML = roadSignsData.map(sign => `
+                <div class="card-bg p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col items-center text-center space-y-3 sign-card">
+                    <div class="w-16 h-16 bg-blue-50 dark:bg-gray-800 rounded-full flex items-center justify-center text-3xl shadow-inner">${sign.icon}</div>
+                    <div>
+                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">${sign.type}</span>
+                        <h4 class="font-bold text-base mt-2 text-custom">${sign.name}</h4>
+                        <p class="text-xs text-muted-custom mt-1 leading-relaxed">${sign.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterSigns() {
+            const query = document.getElementById('sign-search').value.toLowerCase();
+            const cards = document.getElementsByClassName('sign-card');
+            
+            roadSignsData.forEach((sign, idx) => {
+                if (sign.name.toLowerCase().includes(query) || sign.desc.toLowerCase().includes(query) || sign.type.toLowerCase().includes(query)) {
+                    cards[idx].classList.remove('hidden');
+                } else {
+                    cards[idx].classList.add('hidden');
+                }
+            });
+        }
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    const CACHE_NAME = 'driver-permit-v1';
+                    const assets = [ '/', '/index.html' ];
+                    self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(assets))));
+                    self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl).catch(err => console.log('SW registration failed', err));
+            });
+        }
+    </script>
+</body>
+</html>
