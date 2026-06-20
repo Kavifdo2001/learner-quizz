@@ -1,4 +1,4 @@
-const CACHE_NAME = "driver-permit-v1";
+const CACHE_NAME = "driver-permit-v2";
 
 const assets = [
   "./",
